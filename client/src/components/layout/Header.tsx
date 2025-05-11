@@ -55,12 +55,11 @@ export default function Header() {
         <div className="flex justify-between items-center">
           <div className="flex items-center">
             <Link href="/" className="flex items-center">
-              <div className="relative h-12 w-auto">
+              <div className="w-auto">
                 <img 
                   src="/attached_assets/9f3fc153-6d70-4b48-84a7-435b5b7a50f8_removalai_preview.png" 
                   alt="PriorityParcel Logo" 
-                  className="h-16 w-auto object-contain" 
-                  style={{ maxWidth: '280px' }}
+                  className="h-10 md:h-14 w-auto" 
                 />
               </div>
             </Link>
