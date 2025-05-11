@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { TruckImage } from "../TruckImage";
+import TruckImage from "../../TruckImage";
 
 export default function HeroSection() {
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {

@@ -1,6 +1,6 @@
 
 
-import { TruckImage } from "../TruckImage";
+import TruckImage from "../../TruckImage";
 
 interface Stat {
   value: string;
