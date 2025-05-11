@@ -56,11 +56,11 @@ export default function Header() {
           <div className="flex items-center">
             <Link href="/" className="flex items-center">
               <img 
-                src="https://raw.githubusercontent.com/gilbarbara/logos/master/logos/typescript-icon.svg" 
+                src="/attached_assets/9f3fc153-6d70-4b48-84a7-435b5b7a50f8_removalai_preview.png" 
                 alt="PriorityParcel Logo" 
-                className="h-10 w-auto mr-2" 
+                className="h-12 w-auto mr-2" 
               />
-              <span className="text-primary font-bold text-xl font-inter">PriorityParcel</span>
+              <span className="text-primary font-bold text-xl font-inter sr-only">PriorityParcel</span>
             </Link>
           </div>
           

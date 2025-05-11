@@ -121,7 +121,7 @@ export default function ContactForm() {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="">Selecteer een regio</SelectItem>
+                  <SelectItem value="none">Selecteer een regio</SelectItem>
                   <SelectItem value="noord">Noord-Nederland</SelectItem>
                   <SelectItem value="midden">Midden-Nederland</SelectItem>
                   <SelectItem value="zuid">Zuid-Nederland</SelectItem>
