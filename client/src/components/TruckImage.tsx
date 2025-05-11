@@ -1,4 +1,5 @@
 import React from 'react';
+import truckImage from '../assets/truck.png';
 
 interface TruckImageProps {
   className?: string;
@@ -11,7 +12,7 @@ export function TruckImage({
 }: TruckImageProps) {
   return (
     <img 
-      src="/image_1746990792057.png" 
+      src={truckImage} 
       alt={alt} 
       className={className} 
     />
