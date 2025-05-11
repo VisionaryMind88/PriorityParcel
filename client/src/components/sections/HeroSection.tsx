@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { TruckImage } from "../TruckImage";
 
 export default function HeroSection() {
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
@@ -45,7 +44,7 @@ export default function HeroSection() {
           </div>
           <div className="hidden md:block">
             <img
-              src="/attached_assets/image_1746990792057.png"
+              src="/image_1746990792057.png"
               alt="Bezorgdienst in actie"
               className="rounded-lg shadow-xl w-full h-auto"
             />
