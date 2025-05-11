@@ -44,10 +44,9 @@ export default function HeroSection() {
             </div>
           </div>
           <div className="hidden md:block">
-            <img
-              src="/img/truck.png"
-              alt="Bezorgdienst in actie"
+            <TruckImage
               className="rounded-lg shadow-xl w-full h-auto"
+              alt="Bezorgdienst in actie"
             />
           </div>
         </div>
