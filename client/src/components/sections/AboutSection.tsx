@@ -1,4 +1,5 @@
 
+import { TruckImage } from "../TruckImage";
 
 interface Stat {
   value: string;
@@ -18,10 +19,9 @@ export default function AboutSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div>
-            <img
-              src="/images/image_1746990792057.png"
-              alt="Professionele transportdienst"
+            <TruckImage 
               className="rounded-lg shadow-lg w-full h-auto object-cover"
+              alt="Professionele transportdienst"
             />
           </div>
           
