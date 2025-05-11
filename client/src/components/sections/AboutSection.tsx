@@ -1,4 +1,4 @@
-import truckImage from "../../assets/image_1746990792057.png";
+
 
 interface Stat {
   value: string;
@@ -19,7 +19,7 @@ export default function AboutSection() {
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div>
             <img
-              src={truckImage}
+              src="/images/image_1746990792057.png"
               alt="Professionele transportdienst"
               className="rounded-lg shadow-lg w-full h-auto object-cover"
             />

@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Link } from "wouter";
-import logoImage from "../../assets/9f3fc153-6d70-4b48-84a7-435b5b7a50f8_removalai_preview.png";
 
 interface NavLink {
   label: string;
@@ -58,7 +57,7 @@ export default function Header() {
             <Link href="/" className="flex items-center">
               <div className="w-auto">
                 <img 
-                  src={logoImage} 
+                  src="/images/9f3fc153-6d70-4b48-84a7-435b5b7a50f8_removalai_preview.png" 
                   alt="PriorityParcel Logo" 
                   className="h-10 md:h-14 w-auto" 
                 />
