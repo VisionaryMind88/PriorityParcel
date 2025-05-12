@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import deliveryVanImage from "../../assets/priorityparcel-van-new.jpg";
+import deliveryVanImage from "../../assets/priorityparcel-van-fullwidth.jpg";
 
 export default function HeroSection() {
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
@@ -15,20 +15,18 @@ export default function HeroSection() {
   };
 
   return (
-    <section id="home" className="relative text-white h-[50vh] flex flex-col justify-center bg-gray-100">
+    <section id="home" className="relative text-white h-[50vh] flex flex-col justify-center">
       <div 
-        className="absolute inset-0 bg-center bg-no-repeat flex items-center justify-center"
-        style={{ backgroundSize: 'contain' }}
-      >
-        <img src={deliveryVanImage} alt="PriorityParcel Delivery Van" className="h-full object-contain" />
-      </div>
-      <div className="absolute inset-0 bg-gradient-to-r from-gray-100/80 to-gray-100/60"></div>
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: `url(${deliveryVanImage})` }}
+      ></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-gray-600/30 to-gray-900/40"></div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10 relative z-10">
         <div className="max-w-3xl">
-          <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold leading-tight mb-3 text-primary">
+          <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold leading-tight mb-3 text-white">
             Betrouwbare en professionele transportdiensten
           </h1>
-          <p className="text-base md:text-lg mb-5 text-gray-700">
+          <p className="text-base md:text-lg mb-5 text-gray-100">
             Waar een auto of bestelbus pakketten, goederen snel en zorgvuldig kan afleveren.
           </p>
           <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
