@@ -62,6 +62,37 @@ export class MemStorage implements IStorage {
     
     // Voorbeeldzendingen voor dashboarddemo
     this.initializeZendingen();
+    
+    // Demo gebruikers aanmaken
+    // Huso account
+    this.createUser({
+      username: "husobosna",
+      email: "husobosna8@gmail.com",
+      password: "test123",
+      role: "klant",
+      firstName: "Huso",
+      lastName: "Bosna",
+      bedrijf: "Huso Logistics B.V.",
+      telefoon: "+31 6 12345678",
+      adres: "Teststraat 123",
+      postcode: "1234 AB",
+      plaats: "Amsterdam"
+    });
+    
+    // Admin account
+    this.createUser({
+      username: "admin",
+      email: "admin@priorityparcel.nl",
+      password: "admin123",
+      role: "admin",
+      firstName: "Admin",
+      lastName: "User",
+      bedrijf: "Priority Parcel",
+      telefoon: "+31 85 401 1028",
+      adres: "Hoofdkantoor 1",
+      postcode: "5678 CD",
+      plaats: "Rotterdam"
+    });
   }
   
   // Initialiseer voorbeeld zendingen
