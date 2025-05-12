@@ -11,6 +11,8 @@ import PrijzenPage from "@/pages/PrijzenPage";
 import DienstenPage from "@/pages/DienstenPage";
 import OverOnsPage from "@/pages/OverOnsPage";
 import ContactPage from "@/pages/ContactPage";
+import LoginPage from "@/pages/LoginPage";
+import DashboardPage from "@/pages/DashboardPage";
 
 function Router() {
   return (
@@ -22,6 +24,8 @@ function Router() {
       <Route path="/contact" component={ContactPage} />
       <Route path="/offerte" component={OffertePage} />
       <Route path="/track-and-trace" component={TrackAndTracePage} />
+      <Route path="/login" component={LoginPage} />
+      <Route path="/dashboard" component={DashboardPage} />
       {/* Fallback to 404 */}
       <Route component={NotFound} />
     </Switch>
