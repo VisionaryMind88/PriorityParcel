@@ -125,14 +125,14 @@ export default function Header() {
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={() => navigate("/dashboard")}
-                    className="bg-gray-200 text-primary px-3 py-2 rounded-md hover:bg-gray-300 transition-colors flex items-center space-x-1"
+                    className="bg-white text-primary px-3 py-2 rounded-md hover:bg-gray-100 transition-colors flex items-center space-x-1"
                   >
                     <User className="h-4 w-4" />
                     <span>Dashboard</span>
                   </button>
                   <button
                     onClick={() => logout()}
-                    className="text-gray-600 px-3 py-2 rounded-md hover:bg-gray-100 transition-colors"
+                    className="text-white px-3 py-2 rounded-md hover:bg-blue-400 transition-colors"
                   >
                     Uitloggen
                   </button>
@@ -140,7 +140,7 @@ export default function Header() {
               ) : (
                 <button
                   onClick={() => navigate("/login")}
-                  className="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors flex items-center space-x-1"
+                  className="bg-white text-primary px-4 py-2 rounded-md hover:bg-gray-100 transition-colors flex items-center space-x-1"
                 >
                   <LogIn className="h-4 w-4" />
                   <span>Inloggen</span>
@@ -154,7 +154,7 @@ export default function Header() {
             <button
               onClick={toggleMenu}
               type="button"
-              className="text-primary hover:text-secondary focus:outline-none"
+              className="text-white hover:text-gray-200 focus:outline-none"
               aria-label={isMenuOpen ? "Close menu" : "Open menu"}
             >
               {isMenuOpen ? (
@@ -185,7 +185,7 @@ export default function Header() {
                   <a
                     key={link.href}
                     href={link.href}
-                    className={`${link.label === "Offerte" ? "bg-accent" : "bg-primary"} text-white px-4 py-2 rounded-md block my-3 text-center`}
+                    className={`${link.label === "Offerte" ? "bg-accent" : "bg-white"} ${link.label === "Offerte" ? "text-white" : "text-primary"} px-4 py-2 rounded-md block my-3 text-center`}
                     onClick={(e) => handleNavClick(e, link.href)}
                   >
                     {link.label}
@@ -199,7 +199,7 @@ export default function Header() {
                         navigate("/dashboard");
                         setIsMenuOpen(false);
                       }}
-                      className="bg-gray-200 text-primary px-3 py-2 rounded-md hover:bg-gray-300 transition-colors flex items-center justify-center space-x-1"
+                      className="bg-white text-primary px-3 py-2 rounded-md hover:bg-gray-100 transition-colors flex items-center justify-center space-x-1"
                     >
                       <User className="h-4 w-4" />
                       <span>Dashboard</span>
@@ -209,7 +209,7 @@ export default function Header() {
                         logout();
                         setIsMenuOpen(false);
                       }}
-                      className="text-gray-600 border border-gray-300 px-3 py-2 rounded-md hover:bg-gray-100 transition-colors"
+                      className="text-white border border-white px-3 py-2 rounded-md hover:bg-blue-400 transition-colors"
                     >
                       Uitloggen
                     </button>
@@ -220,7 +220,7 @@ export default function Header() {
                       navigate("/login");
                       setIsMenuOpen(false);
                     }}
-                    className="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors flex items-center justify-center space-x-1 w-full my-3"
+                    className="bg-white text-primary px-4 py-2 rounded-md hover:bg-gray-100 transition-colors flex items-center justify-center space-x-1 w-full my-3"
                   >
                     <LogIn className="h-4 w-4" />
                     <span>Inloggen</span>
