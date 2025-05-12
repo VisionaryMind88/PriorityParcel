@@ -196,6 +196,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check if we already have demo users
       const users = await storage.getAllUsers();
       
+      // Create users if none exist
       if (users.length === 0) {
         // Create a demo user
         const demoUser = {
@@ -212,12 +213,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
           role: "klant"
         };
         
-        const newUser = await storage.createUser(demoUser);
-        const { password, ...userWithoutPassword } = newUser;
+        // Create a user with the provided credentials
+        const customUser = {
+          username: "husobosna",
+          email: "husobosna8@gmail.com",
+          password: "flufica1",
+          firstName: "Huso",
+          lastName: "Bosna",
+          bedrijf: "Priorityparcel",
+          telefoon: "+31 6 12345678",
+          adres: "Meanderhof 97",
+          postcode: "4337 GP",
+          plaats: "Middelburg",
+          role: "klant"
+        };
+        
+        // Create both users
+        const newDemoUser = await storage.createUser(demoUser);
+        const newCustomUser = await storage.createUser(customUser);
+        
+        // Return information about created users (without passwords)
+        const { password: pass1, ...demoUserWithoutPassword } = newDemoUser;
+        const { password: pass2, ...customUserWithoutPassword } = newCustomUser;
         
         return res.status(201).json({
-          message: "Demo gebruiker aangemaakt",
-          user: userWithoutPassword
+          message: "Gebruikers aangemaakt",
+          users: [demoUserWithoutPassword, customUserWithoutPassword]
         });
       } else {
         return res.status(200).json({
