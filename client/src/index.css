@@ -13,9 +13,9 @@
   --card-foreground: 20 14.3% 4.1%;
   --border: 20 5.9% 90%;
   --input: 20 5.9% 90%;
-  --primary: 211 70% 23%; /* PriorityParcel primary blue (1A3A5A) */
+  --primary: 195 100% 45%; /* PriorityParcel primary blue (logo achtergrondkleur) */
   --primary-foreground: 211 100% 99%;
-  --secondary: 207 50% 47%; /* PriorityParcel secondary blue (3D7DB4) */
+  --secondary: 195 100% 40%; /* PriorityParcel secondary blue (iets donkerder variant) */
   --secondary-foreground: 24 9.8% 10%;
   --accent: 30 100% 50%; /* PriorityParcel accent orange (FF7D00) */
   --accent-foreground: 24 9.8% 10%;
@@ -36,9 +36,9 @@
   --card-foreground: 0 0% 98%;
   --border: 240 3.7% 15.9%;
   --input: 240 3.7% 15.9%;
-  --primary: 211 70% 23%;
+  --primary: 195 100% 45%;
   --primary-foreground: 211 100% 99%;
-  --secondary: 207 50% 47%;
+  --secondary: 195 100% 40%;
   --secondary-foreground: 0 0% 98%;
   --accent: 30 100% 50%;
   --accent-foreground: 0 0% 98%;

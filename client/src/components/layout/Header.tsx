@@ -85,7 +85,7 @@ export default function Header() {
   };
 
   return (
-    <header className={`bg-white shadow-md sticky top-0 z-50 transition-all ${scrolled ? "py-2" : "py-4"}`}>
+    <header className={`bg-primary text-white shadow-md sticky top-0 z-50 transition-all ${scrolled ? "py-2" : "py-4"}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
           <div className="flex items-center">
@@ -102,7 +102,7 @@ export default function Header() {
               <a
                 key={link.href}
                 href={link.href}
-                className="text-primary hover:text-secondary font-medium transition duration-150"
+                className="text-white hover:text-gray-200 font-medium transition duration-150"
                 onClick={(e) => handleNavClick(e, link.href)}
               >
                 {link.label}
@@ -114,7 +114,7 @@ export default function Header() {
                 <a
                   key={link.href}
                   href={link.href}
-                  className={`${link.label === "Offerte" ? "bg-accent" : "bg-primary"} text-white px-4 py-2 rounded-md hover:opacity-90 transition-opacity`}
+                  className={`${link.label === "Offerte" ? "bg-accent" : "bg-white"} ${link.label === "Offerte" ? "text-white" : "text-primary"} px-4 py-2 rounded-md hover:opacity-90 transition-opacity`}
                   onClick={(e) => handleNavClick(e, link.href)}
                 >
                   {link.label}
@@ -174,7 +174,7 @@ export default function Header() {
                 <a
                   key={link.href}
                   href={link.href}
-                  className="text-primary hover:text-secondary font-medium px-2 py-1 rounded"
+                  className="text-white hover:text-gray-200 font-medium px-2 py-1 rounded"
                   onClick={(e) => handleNavClick(e, link.href)}
                 >
                   {link.label}
