@@ -27,76 +27,36 @@ import {
   Repeat,
 } from "lucide-react";
 
-// Mock data voor het dashboard
-const mockZendingen = [
-  {
-    id: 1,
-    trackingCode: "PNL12345678",
-    status: "onderweg",
-    prioriteit: "standaard",
-    verzendDatum: "2025-05-10T10:30:00",
-    geplanndeAfleverDatum: "2025-05-13T12:00:00",
-    verzender: "Kantoor Supplies B.V.",
-    ontvanger: "Tech Solutions N.V.",
-    ophaladres: "Industrieweg 45, 1234 AB Amsterdam",
-    afleveradres: "Businesspark 12, 5678 CD Rotterdam",
-    prijs: "€45,95",
-    betaald: true,
-    lastUpdate: {
-      status: "onderweg",
-      locatie: "Distributiecentrum Utrecht",
-      tijdstip: "2025-05-11T14:45:00",
-    },
-  },
-  {
-    id: 2,
-    trackingCode: "PNL23456789",
-    status: "gepland",
-    prioriteit: "spoed",
-    verzendDatum: "2025-05-12T09:00:00",
-    geplanndeAfleverDatum: "2025-05-12T17:00:00",
-    verzender: "Fashion Store B.V.",
-    ontvanger: "Boutique Elegance",
-    ophaladres: "Modestraat 78, 2345 EF Den Haag",
-    afleveradres: "Winkelplein 34, 6789 GH Groningen", 
-    prijs: "€75,50",
-    betaald: false,
-    lastUpdate: {
-      status: "gepland",
-      locatie: "Wachtend op ophaling",
-      tijdstip: "2025-05-11T15:30:00",
-    },
-  },
-  {
-    id: 3, 
-    trackingCode: "PNL34567890",
-    status: "afgeleverd",
-    prioriteit: "standaard",
-    verzendDatum: "2025-05-09T11:15:00",
-    geplanndeAfleverDatum: "2025-05-11T13:00:00",
-    werkelijkeAfleverDatum: "2025-05-11T12:45:00",
-    verzender: "Electronics Plus",
-    ontvanger: "IT Solutions",
-    ophaladres: "Techstraat 12, 3456 JK Eindhoven",
-    afleveradres: "Computerweg 45, 7890 LM Utrecht",
-    prijs: "€32,75",
-    betaald: true,
-    lastUpdate: {
-      status: "afgeleverd",
-      locatie: "Computerweg 45, Utrecht",
-      tijdstip: "2025-05-11T12:45:00",
-    },
-  }
-];
+// Statische type definitie voor Zending
+interface Zending {
+  id: number;
+  trackingCode: string;
+  status: string;
+  prioriteit: string;
+  verzendDatum: string;
+  geplanndeAfleverDatum: string;
+  werkelijkeAfleverDatum?: string;
+  verzender: string;
+  ontvanger: string;
+  ophaladres: string;
+  afleveradres: string;
+  prijs: string;
+  betaald: boolean;
+  lastUpdate: {
+    status: string;
+    locatie: string;
+    tijdstip: string;
+  };
+}
 
-// Statistische gegevens voor het dashboard
-const statsData = {
-  totaalZendingen: 156,
-  actieveZendingen: 32,
-  afgeleverd: 124,
-  gemiddeldeLeveringstijd: "1.7 dagen",
-  klanttevredenheid: "4.8 / 5",
-};
+// Type definitie voor statistieken
+interface DashboardStats {
+  totaalZendingen: number;
+  actieveZendingen: number;
+  afgeleverd: number;
+  gemiddeldeLeveringstijd: string;
+  klanttevredenheid: string;
+}
 
 // Status badge component
 const StatusBadge = ({ status }: { status: string }) => {

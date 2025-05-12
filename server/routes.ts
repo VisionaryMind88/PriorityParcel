@@ -138,9 +138,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // For now, we'll just return the user info (excluding password)
       const { password, ...userWithoutPassword } = user;
       
+      // Create a token that includes the user ID so we can identify the user later
+      const token = `mock-jwt-token-${Date.now()}-${user.id}`;
+      
       return res.status(200).json({
         user: userWithoutPassword,
-        token: "mock-jwt-token-" + Date.now(), // In a real implementation, this would be a JWT token
+        token: token, // In a real implementation, this would be a JWT token
       });
       
     } catch (error) {
@@ -171,14 +174,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Niet geautoriseerd" });
       }
       
-      // For development, just return the first user (in a real implementation we'd validate the token)
-      const users = await storage.getAllUsers();
-      if (users.length === 0) {
-        return res.status(404).json({ message: "Geen gebruikers gevonden" });
+      // Extract the token (we'll use it to identify the user)
+      const token = authHeader.split(' ')[1];
+      // Check if the token contains a user ID (our mock tokens have format "mock-jwt-token-{timestamp}-{userId}")
+      const tokenParts = token.split('-');
+      const userId = tokenParts.length > 3 ? parseInt(tokenParts[4], 10) : 2; // Default to user 2 if not found
+      
+      // Find the user by ID
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "Gebruiker niet gevonden" });
       }
       
       // Remove the password before sending the response
-      const { password, ...userWithoutPassword } = users[0];
+      const { password, ...userWithoutPassword } = user;
       
       return res.status(200).json(userWithoutPassword);
       
@@ -259,6 +268,78 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/logout", (req: Request, res: Response) => {
     // In a real implementation, this would invalidate the user's session token
     return res.status(200).json({ message: "Succesvol uitgelogd" });
+  });
+  
+  // API routes voor dashboard
+  
+  // Haal alle zendingen op voor een gebruiker
+  app.get("/api/zendingen", async (req: Request, res: Response) => {
+    try {
+      // Normaal zouden we de user ID uit de geauthenticeerde gebruiker halen
+      // Voor nu gebruiken we de user ID uit de query parameter of default naar 2 (Huso)
+      const userId = req.query.userId ? parseInt(req.query.userId as string, 10) : 2;
+      
+      const zendingen = await storage.getZendingenByUserId(userId);
+      
+      return res.status(200).json(zendingen);
+    } catch (error) {
+      console.error("Error fetching zendingen:", error);
+      return res.status(500).json({
+        message: "Er is een fout opgetreden bij het ophalen van zendingen"
+      });
+    }
+  });
+  
+  // Haal dashboard statistieken op
+  app.get("/api/dashboard/stats", async (_req: Request, res: Response) => {
+    try {
+      // Verzamel alle dashboardstatistieken
+      const [activeZendingen, afgeleverdZendingen, gemiddeldeTijd, klanttevredenheid] = await Promise.all([
+        storage.getActiveZendingenCount(),
+        storage.getDeliveredZendingenCount(),
+        storage.getAverageDeliveryTime(),
+        storage.getCustomerSatisfaction()
+      ]);
+      
+      const totaalZendingen = activeZendingen + afgeleverdZendingen;
+      
+      return res.status(200).json({
+        totaalZendingen,
+        actieveZendingen: activeZendingen,
+        afgeleverd: afgeleverdZendingen,
+        gemiddeldeLeveringstijd: gemiddeldeTijd,
+        klanttevredenheid
+      });
+    } catch (error) {
+      console.error("Error fetching dashboard stats:", error);
+      return res.status(500).json({
+        message: "Er is een fout opgetreden bij het ophalen van dashboardstatistieken"
+      });
+    }
+  });
+  
+  // Haal details van een specifieke zending op
+  app.get("/api/zendingen/:id", async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id, 10);
+      
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Ongeldig zending ID" });
+      }
+      
+      const zending = await storage.getZendingById(id);
+      
+      if (!zending) {
+        return res.status(404).json({ message: "Zending niet gevonden" });
+      }
+      
+      return res.status(200).json(zending);
+    } catch (error) {
+      console.error("Error fetching zending:", error);
+      return res.status(500).json({
+        message: "Er is een fout opgetreden bij het ophalen van de zending"
+      });
+    }
   });
 
   const httpServer = createServer(app);
