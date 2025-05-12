@@ -11,7 +11,13 @@ const navLinks: NavLink[] = [
   { label: "Home", href: "#home" },
   { label: "Diensten", href: "#diensten" },
   { label: "Over Ons", href: "#over-ons" },
+  { label: "Prijzen", href: "/prijzen" },
   { label: "Contact", href: "#contact" },
+];
+
+const actionLinks: NavLink[] = [
+  { label: "Track & Trace", href: "/track-and-trace" },
+  { label: "Offerte", href: "/offerte" },
 ];
 
 export default function Header() {
