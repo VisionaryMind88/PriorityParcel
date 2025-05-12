@@ -4,8 +4,15 @@ import { storage } from "./storage";
 import { insertContactMessageSchema } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
+import express from "express";
+import path from "path";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Serve static files from root public directory
+  app.use(express.static(path.join(process.cwd(), 'public')));
+  
+  // Serve static files from client/public directory
+  app.use(express.static(path.join(process.cwd(), 'client', 'public')));
   // Contact form submission endpoint
   app.post("/api/contact", async (req: Request, res: Response) => {
     try {
