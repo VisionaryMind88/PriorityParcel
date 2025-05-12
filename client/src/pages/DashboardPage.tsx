@@ -118,6 +118,18 @@ export default function DashboardPage() {
   const { toast } = useToast();
   const { user, isLoading, isAuthenticated, logout } = useAuth();
   
+  // State voor zendingen en statistieken
+  const [zendingen, setZendingen] = useState<Zending[]>([]);
+  const [statsData, setStatsData] = useState<DashboardStats>({
+    totaalZendingen: 0,
+    actieveZendingen: 0,
+    afgeleverd: 0,
+    gemiddeldeLeveringstijd: "0.0 dagen",
+    klanttevredenheid: "0.0 / 5"
+  });
+  const [loadingZendingen, setLoadingZendingen] = useState(true);
+  const [loadingStats, setLoadingStats] = useState(true);
+  
   // Authentication check
   useEffect(() => {
     // If not loading and not authenticated, redirect to login
@@ -130,19 +142,79 @@ export default function DashboardPage() {
       setLocation("/login");
     }
   }, [isLoading, isAuthenticated, setLocation, toast]);
+  
+  // Haal zendingen op van de API
+  useEffect(() => {
+    const fetchZendingen = async () => {
+      if (!isAuthenticated) return;
+      
+      try {
+        setLoadingZendingen(true);
+        const response = await fetch("/api/zendingen");
+        
+        if (!response.ok) {
+          throw new Error("Fout bij het ophalen van zendingen");
+        }
+        
+        const data = await response.json();
+        setZendingen(data);
+      } catch (error) {
+        console.error("Error fetching zendingen:", error);
+        toast({
+          title: "Fout bij het laden van zendingen",
+          description: "Er is een probleem opgetreden bij het ophalen van uw zendingen.",
+          variant: "destructive",
+        });
+      } finally {
+        setLoadingZendingen(false);
+      }
+    };
+    
+    fetchZendingen();
+  }, [isAuthenticated, toast]);
+  
+  // Haal dashboard statistieken op
+  useEffect(() => {
+    const fetchStats = async () => {
+      if (!isAuthenticated) return;
+      
+      try {
+        setLoadingStats(true);
+        const response = await fetch("/api/dashboard/stats");
+        
+        if (!response.ok) {
+          throw new Error("Fout bij het ophalen van statistieken");
+        }
+        
+        const data = await response.json();
+        setStatsData(data);
+      } catch (error) {
+        console.error("Error fetching dashboard stats:", error);
+        toast({
+          title: "Fout bij het laden van statistieken",
+          description: "Er is een probleem opgetreden bij het ophalen van dashboardgegevens.",
+          variant: "destructive",
+        });
+      } finally {
+        setLoadingStats(false);
+      }
+    };
+    
+    fetchStats();
+  }, [isAuthenticated, toast]);
 
   // Functie om zendingen te filteren op basis van zoekopdracht
-  const filterZendingen = (zendingen: typeof mockZendingen) => {
-    if (!searchQuery) return zendingen;
+  const filterZendingen = (zendingenData: Zending[]) => {
+    if (!searchQuery) return zendingenData;
     
-    return zendingen.filter(zending => 
+    return zendingenData.filter(zending => 
       zending.trackingCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
       zending.verzender.toLowerCase().includes(searchQuery.toLowerCase()) ||
       zending.ontvanger.toLowerCase().includes(searchQuery.toLowerCase())
     );
   };
 
-  const filteredZendingen = filterZendingen(mockZendingen);
+  const filteredZendingen = filterZendingen(zendingen);
 
   const handleLogout = () => {
     logout(); // This will use the logout function from useAuth
@@ -241,8 +313,17 @@ export default function DashboardPage() {
                     <Truck className="h-4 w-4 text-gray-500" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{statsData.actieveZendingen}</div>
-                    <p className="text-xs text-gray-500">van {statsData.totaalZendingen} zendingen</p>
+                    {loadingStats ? (
+                      <div className="animate-pulse">
+                        <div className="h-8 w-16 bg-gray-200 rounded"></div>
+                        <div className="h-4 w-24 bg-gray-100 rounded mt-1"></div>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="text-2xl font-bold">{statsData.actieveZendingen}</div>
+                        <p className="text-xs text-gray-500">van {statsData.totaalZendingen} zendingen</p>
+                      </>
+                    )}
                   </CardContent>
                 </Card>
                 
@@ -252,8 +333,17 @@ export default function DashboardPage() {
                     <Clock className="h-4 w-4 text-gray-500" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{statsData.gemiddeldeLeveringstijd}</div>
-                    <p className="text-xs text-gray-500">laatste 30 dagen</p>
+                    {loadingStats ? (
+                      <div className="animate-pulse">
+                        <div className="h-8 w-16 bg-gray-200 rounded"></div>
+                        <div className="h-4 w-24 bg-gray-100 rounded mt-1"></div>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="text-2xl font-bold">{statsData.gemiddeldeLeveringstijd}</div>
+                        <p className="text-xs text-gray-500">laatste 30 dagen</p>
+                      </>
+                    )}
                   </CardContent>
                 </Card>
                 
@@ -263,8 +353,17 @@ export default function DashboardPage() {
                     <CheckCircle className="h-4 w-4 text-gray-500" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{statsData.klanttevredenheid}</div>
-                    <p className="text-xs text-gray-500">laatste 30 dagen</p>
+                    {loadingStats ? (
+                      <div className="animate-pulse">
+                        <div className="h-8 w-16 bg-gray-200 rounded"></div>
+                        <div className="h-4 w-24 bg-gray-100 rounded mt-1"></div>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="text-2xl font-bold">{statsData.klanttevredenheid}</div>
+                        <p className="text-xs text-gray-500">laatste 30 dagen</p>
+                      </>
+                    )}
                   </CardContent>
                 </Card>
               </div>
@@ -278,39 +377,75 @@ export default function DashboardPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    {filteredZendingen.map((zending) => (
-                      <div key={zending.id} className="flex flex-col md:flex-row justify-between p-4 bg-gray-50 rounded-lg">
-                        <div className="space-y-2">
-                          <div className="flex items-center space-x-2">
-                            <Package className="h-5 w-5 text-primary" />
-                            <span className="font-bold">{zending.trackingCode}</span>
-                            <StatusBadge status={zending.status} />
-                          </div>
-                          <div className="space-y-1">
-                            <div className="flex items-center text-sm text-gray-600">
-                              <Calendar className="h-4 w-4 mr-2" />
-                              <span>Verzonden: {formatDate(zending.verzendDatum)}</span>
+                  {loadingZendingen ? (
+                    <div className="space-y-4">
+                      {[1, 2, 3].map((i) => (
+                        <div key={i} className="p-4 bg-gray-50 rounded-lg">
+                          <div className="animate-pulse">
+                            <div className="flex items-center space-x-2 mb-3">
+                              <div className="h-5 w-5 bg-gray-200 rounded-full"></div>
+                              <div className="h-4 w-32 bg-gray-200 rounded"></div>
+                              <div className="h-4 w-20 bg-gray-200 rounded-full"></div>
                             </div>
-                            <div className="flex items-center text-sm text-gray-600">
-                              <MapPin className="h-4 w-4 mr-2" />
-                              <span>Van: {zending.ophaladres}</span>
+                            <div className="space-y-2">
+                              <div className="h-4 w-48 bg-gray-100 rounded"></div>
+                              <div className="h-4 w-56 bg-gray-100 rounded"></div>
+                              <div className="h-4 w-56 bg-gray-100 rounded"></div>
                             </div>
-                            <div className="flex items-center text-sm text-gray-600">
-                              <MapPin className="h-4 w-4 mr-2" />
-                              <span>Naar: {zending.afleveradres}</span>
+                            <div className="flex justify-end mt-3">
+                              <div className="h-8 w-24 bg-gray-200 rounded"></div>
                             </div>
                           </div>
                         </div>
-                        
-                        <div className="mt-4 md:mt-0 self-center">
-                          <Button variant="outline" size="sm" className="gap-1">
-                            Details <ChevronRight className="h-4 w-4" />
-                          </Button>
-                        </div>
+                      ))}
+                    </div>
+                  ) : filteredZendingen.length === 0 ? (
+                    <div className="text-center py-10">
+                      <div className="flex justify-center">
+                        <Package className="h-16 w-16 text-gray-300" />
                       </div>
-                    ))}
-                  </div>
+                      <h3 className="mt-4 text-lg font-semibold">Geen zendingen gevonden</h3>
+                      <p className="mt-2 text-gray-500 max-w-md mx-auto">
+                        {searchQuery 
+                          ? "Er zijn geen zendingen die overeenkomen met uw zoekopdracht"
+                          : "U heeft nog geen zendingen. Klik op 'Nieuwe Zending' om te beginnen."}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {filteredZendingen.map((zending: Zending) => (
+                        <div key={zending.id} className="flex flex-col md:flex-row justify-between p-4 bg-gray-50 rounded-lg">
+                          <div className="space-y-2">
+                            <div className="flex items-center space-x-2">
+                              <Package className="h-5 w-5 text-primary" />
+                              <span className="font-bold">{zending.trackingCode}</span>
+                              <StatusBadge status={zending.status} />
+                            </div>
+                            <div className="space-y-1">
+                              <div className="flex items-center text-sm text-gray-600">
+                                <Calendar className="h-4 w-4 mr-2" />
+                                <span>Verzonden: {formatDate(zending.verzendDatum)}</span>
+                              </div>
+                              <div className="flex items-center text-sm text-gray-600">
+                                <MapPin className="h-4 w-4 mr-2" />
+                                <span>Van: {zending.ophaladres}</span>
+                              </div>
+                              <div className="flex items-center text-sm text-gray-600">
+                                <MapPin className="h-4 w-4 mr-2" />
+                                <span>Naar: {zending.afleveradres}</span>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="mt-4 md:mt-0 self-center">
+                            <Button variant="outline" size="sm" className="gap-1">
+                              Details <ChevronRight className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>
