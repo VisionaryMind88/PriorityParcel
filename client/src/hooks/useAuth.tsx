@@ -156,10 +156,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [error, token, toast]);
   
-  // Check if user is admin and redirect to admin dashboard
+  // Check if user is admin and redirect to admin dashboard 
   useEffect(() => {
+    // We voegen een kleine vertraging toe om ervoor te zorgen dat de login effecten eerst worden verwerkt
     if (user && (user as any).role === "admin") {
-      setLocation("/admin");
+      setTimeout(() => {
+        setLocation("/admin");
+      }, 100);
     }
   }, [user, setLocation]);
 

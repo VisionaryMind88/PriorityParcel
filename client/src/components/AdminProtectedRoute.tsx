@@ -26,7 +26,7 @@ export default function AdminProtectedRoute({
         });
         setLocation("/login");
       } 
-      else if (user && (user as any).role !== "admin") {
+      else if (user && user.role !== "admin") {
         toast({
           title: "Geen toegang",
           description: "U heeft geen admin rechten om deze pagina te bekijken.",
@@ -50,5 +50,5 @@ export default function AdminProtectedRoute({
   }
 
   // Only render children if user is authenticated and is an admin
-  return isAuthenticated && (user as any)?.role === "admin" ? <>{children}</> : null;
+  return isAuthenticated && user?.role === "admin" ? <>{children}</> : null;
 }

@@ -25,7 +25,7 @@ export default function LoginPage() {
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
   const [, setLocation] = useLocation();
-  const { login, isLoading, isAuthenticated } = useAuth();
+  const { login, isLoading, isAuthenticated, user } = useAuth();
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -38,19 +38,20 @@ export default function LoginPage() {
   
   // Redirect if already authenticated
   useEffect(() => {
-    if (isAuthenticated) {
-      setLocation("/dashboard");
+    if (isAuthenticated && user) {
+      // We laten de redirect in useAuth.tsx afhandelen voor admin gebruikers
+      if (user.role !== "admin") {
+        setLocation("/dashboard");
+      }
     }
-  }, [isAuthenticated, setLocation]);
+  }, [isAuthenticated, user, setLocation]);
 
   const onSubmit = async (data: LoginFormValues) => {
     try {
       await login(data.email, data.password, data.rememberMe);
       
-      // Successfully logged in, redirect to dashboard after a short delay
-      setTimeout(() => {
-        setLocation("/dashboard");
-      }, 500);
+      // We hoeven geen redirect hier te doen, dit wordt afgehandeld door de useEffect's in useAuth.tsx
+      // voor admin gebruikers, en hierboven voor reguliere gebruikers
     } catch (error) {
       // Error is handled in the auth hook
       console.error("Login submission error:", error);
