@@ -14,9 +14,12 @@ import {
 // you might need
 
 export interface IStorage {
+  // User methods
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  getAllUsers(): Promise<User[]>;
+  updateUserLastLogin(id: number): Promise<User | undefined>;
   
   // Contact message methods
   createContactMessage(message: InsertContactMessage): Promise<ContactMessage>;
@@ -57,11 +60,50 @@ export class MemStorage implements IStorage {
     );
   }
 
+  async getAllUsers(): Promise<User[]> {
+    return Array.from(this.users.values());
+  }
+
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.userCurrentId++;
-    const user: User = { ...insertUser, id };
+    const now = new Date();
+    const user: User = { 
+      id, 
+      isActive: true,
+      createdAt: now,
+      updatedAt: now,
+      lastLogin: null,
+      username: insertUser.username,
+      email: insertUser.email,
+      password: insertUser.password,
+      role: insertUser.role || "klant",
+      firstName: insertUser.firstName || null,
+      lastName: insertUser.lastName || null,
+      bedrijf: insertUser.bedrijf || null,
+      telefoon: insertUser.telefoon || null,
+      adres: insertUser.adres || null,
+      postcode: insertUser.postcode || null,
+      plaats: insertUser.plaats || null
+    };
     this.users.set(id, user);
     return user;
+  }
+  
+  async updateUserLastLogin(id: number): Promise<User | undefined> {
+    const user = this.users.get(id);
+    
+    if (!user) {
+      return undefined;
+    }
+    
+    const updatedUser = {
+      ...user,
+      lastLogin: new Date(),
+      updatedAt: new Date()
+    };
+    
+    this.users.set(id, updatedUser);
+    return updatedUser;
   }
   
   // Contact message methods
@@ -71,7 +113,10 @@ export class MemStorage implements IStorage {
     const message: ContactMessage = { 
       ...insertMessage, 
       id, 
-      createdAt: now 
+      createdAt: now,
+      phone: insertMessage.phone || null,
+      location: insertMessage.location || null,
+      ipAddress: insertMessage.ipAddress || null
     };
     this.contactMessages.set(id, message);
     return message;
@@ -93,7 +138,11 @@ export class MemStorage implements IStorage {
     const offerte: PrijsOfferte = { 
       ...insertOfferte, 
       id, 
-      createdAt: now 
+      createdAt: now,
+      bedrijf: insertOfferte.bedrijf || null,
+      ipAddress: insertOfferte.ipAddress || null,
+      bericht: insertOfferte.bericht || null,
+      prijsIndicatie: insertOfferte.prijsIndicatie || null
     };
     this.prijsOffertes.set(id, offerte);
     return offerte;
