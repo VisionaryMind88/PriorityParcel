@@ -15,18 +15,18 @@ export default function HeroSection() {
   };
 
   return (
-    <section id="home" className="relative text-white h-[75vh] flex flex-col justify-center">
+    <section id="home" className="relative text-white h-[60vh] flex flex-col justify-center">
       <div 
         className="absolute inset-0 bg-cover bg-center"
         style={{ backgroundImage: `url(${deliveryVanImage})` }}
       ></div>
       <div className="absolute inset-0 bg-black opacity-60"></div>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14 relative z-10">
         <div className="max-w-3xl">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight mb-6">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight mb-4">
             Betrouwbare en professionele transportdiensten
           </h1>
-          <p className="text-lg md:text-xl mb-8 text-gray-100">
+          <p className="text-lg md:text-xl mb-6 text-gray-100">
             Waar een auto of bestelbus pakketten, goederen snel en zorgvuldig kan afleveren.
           </p>
           <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
@@ -47,7 +47,7 @@ export default function HeroSection() {
           </div>
         </div>
       </div>
-      <div className="absolute bottom-6 left-0 right-0 flex justify-center animate-bounce">
+      <div className="absolute bottom-4 left-0 right-0 flex justify-center animate-bounce">
         <a 
           href="#diensten"
           onClick={(e) => handleNavClick(e, "#diensten")}
