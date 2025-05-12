@@ -1,7 +1,7 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertContactMessageSchema } from "@shared/schema";
+import { insertContactMessageSchema, insertPrijsOfferteSchema } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 import express from "express";
@@ -57,6 +57,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Error fetching contact messages:", error);
       return res.status(500).json({
         message: "Error processing your request"
+      });
+    }
+  });
+  
+  // Handle prijsofferte requests
+  app.post("/api/prijsofferte", async (req: Request, res: Response) => {
+    try {
+      // Validate the request body
+      const validatedData = insertPrijsOfferteSchema.parse({
+        ...req.body,
+        ipAddress: req.ip || req.socket.remoteAddress
+      });
+      
+      // Store the contact message
+      const savedOfferte = await storage.createPrijsOfferte(validatedData);
+      
+      // Email sending would be handled here in production with SendGrid
+      // For now we only log the data
+      console.log("Received price quote request:", {
+        id: savedOfferte.id,
+        naam: savedOfferte.naam,
+        email: savedOfferte.email,
+        telefoon: savedOfferte.telefoon,
+        transportType: savedOfferte.transportType,
+        timestamp: savedOfferte.createdAt
+      });
+      
+      // Return success response
+      return res.status(201).json({
+        id: savedOfferte.id,
+        message: "Prijsofferte aanvraag succesvol ingediend"
+      });
+    } catch (error) {
+      console.error("Error handling prijsofferte submission:", error);
+      
+      if (error instanceof ZodError) {
+        // Handle validation errors
+        const validationError = fromZodError(error);
+        return res.status(400).json({
+          message: "Validatiefout",
+          errors: validationError.details
+        });
+      }
+      
+      return res.status(500).json({
+        message: "Er is een fout opgetreden bij het verwerken van uw aanvraag"
       });
     }
   });

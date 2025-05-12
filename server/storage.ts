@@ -1,4 +1,14 @@
-import { users, type User, type InsertUser, contactMessages, type ContactMessage, type InsertContactMessage } from "@shared/schema";
+import { 
+  users, 
+  type User, 
+  type InsertUser, 
+  contactMessages, 
+  type ContactMessage, 
+  type InsertContactMessage, 
+  prijsOffertes,
+  type PrijsOfferte,
+  type InsertPrijsOfferte
+} from "@shared/schema";
 
 // modify the interface with any CRUD methods
 // you might need
@@ -74,6 +84,28 @@ export class MemStorage implements IStorage {
   
   async getContactMessage(id: number): Promise<ContactMessage | undefined> {
     return this.contactMessages.get(id);
+  }
+
+  // Prijsofferte methods
+  async createPrijsOfferte(insertOfferte: InsertPrijsOfferte): Promise<PrijsOfferte> {
+    const id = this.prijsOfferteCurrentId++;
+    const now = new Date();
+    const offerte: PrijsOfferte = { 
+      ...insertOfferte, 
+      id, 
+      createdAt: now 
+    };
+    this.prijsOffertes.set(id, offerte);
+    return offerte;
+  }
+  
+  async getAllPrijsOffertes(): Promise<PrijsOfferte[]> {
+    return Array.from(this.prijsOffertes.values())
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+  }
+  
+  async getPrijsOfferte(id: number): Promise<PrijsOfferte | undefined> {
+    return this.prijsOffertes.get(id);
   }
 }
 
