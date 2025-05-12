@@ -110,6 +110,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         title: "Succesvol ingelogd",
         description: "U bent nu ingelogd bij PriorityParcel.",
       });
+      
+      // Handle appropriate redirection based on user role
+      if (data.user.role === "admin") {
+        setTimeout(() => setLocation("/admin"), 200);
+      } else {
+        setTimeout(() => setLocation("/dashboard"), 200);
+      }
     },
     onError: (error: any) => {
       console.error("Login error:", error);
@@ -156,15 +163,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [error, token, toast]);
   
-  // Check if user is admin and redirect to admin dashboard 
-  useEffect(() => {
-    // We voegen een kleine vertraging toe om ervoor te zorgen dat de login effecten eerst worden verwerkt
-    if (user && (user as any).role === "admin") {
-      setTimeout(() => {
-        setLocation("/admin");
-      }, 100);
-    }
-  }, [user, setLocation]);
+  // Verwijderd: dit deel veroorzaakte conflicten bij het redirecten
 
   // Login function
   const login = async (email: string, password: string, rememberMe: boolean = false) => {

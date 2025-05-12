@@ -36,15 +36,7 @@ export default function LoginPage() {
     },
   });
   
-  // Redirect if already authenticated
-  useEffect(() => {
-    if (isAuthenticated && user) {
-      // We laten de redirect in useAuth.tsx afhandelen voor admin gebruikers
-      if (user.role !== "admin") {
-        setLocation("/dashboard");
-      }
-    }
-  }, [isAuthenticated, user, setLocation]);
+  // Verwijderd: dit deel veroorzaakte conflicten bij het redirecten
 
   const onSubmit = async (data: LoginFormValues) => {
     try {
