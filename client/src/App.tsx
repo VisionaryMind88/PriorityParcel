@@ -8,14 +8,20 @@ import HomePage from "@/pages/HomePage";
 import OffertePage from "@/pages/OffertePage";
 import TrackAndTracePage from "@/pages/TrackAndTracePage";
 import PrijzenPage from "@/pages/PrijzenPage";
+import DienstenPage from "@/pages/DienstenPage";
+import OverOnsPage from "@/pages/OverOnsPage";
+import ContactPage from "@/pages/ContactPage";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={HomePage} />
+      <Route path="/diensten" component={DienstenPage} />
+      <Route path="/over-ons" component={OverOnsPage} />
+      <Route path="/prijzen" component={PrijzenPage} />
+      <Route path="/contact" component={ContactPage} />
       <Route path="/offerte" component={OffertePage} />
       <Route path="/track-and-trace" component={TrackAndTracePage} />
-      <Route path="/prijzen" component={PrijzenPage} />
       {/* Fallback to 404 */}
       <Route component={NotFound} />
     </Switch>
