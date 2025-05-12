@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,8 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import { Lock, User, Mail, EyeOff, Eye, LogIn } from "lucide-react";
-import { apiRequest } from "@/lib/queryClient";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 
@@ -23,9 +23,9 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [, setLocation] = useLocation();
+  const { login, isLoading, isAuthenticated } = useAuth();
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -35,30 +35,25 @@ export default function LoginPage() {
       rememberMe: false,
     },
   });
+  
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      setLocation("/dashboard");
+    }
+  }, [isAuthenticated, setLocation]);
 
   const onSubmit = async (data: LoginFormValues) => {
-    setIsLoading(true);
     try {
-      // In een echte implementatie zou dit een API-call naar de server zijn
-      await apiRequest("/api/login", "POST", data);
-
-      toast({
-        title: "Succesvol ingelogd",
-        description: "U wordt doorgestuurd naar het dashboard.",
-      });
-
-      // Simuleer een korte vertraging voor de UX
+      await login(data.email, data.password, data.rememberMe);
+      
+      // Successfully logged in, redirect to dashboard after a short delay
       setTimeout(() => {
         setLocation("/dashboard");
-      }, 1000);
+      }, 500);
     } catch (error) {
-      console.error("Login error:", error);
-      toast({
-        title: "Inloggen mislukt",
-        description: "Controleer uw e-mailadres en wachtwoord en probeer het opnieuw.",
-        variant: "destructive",
-      });
-      setIsLoading(false);
+      // Error is handled in the auth hook
+      console.error("Login submission error:", error);
     }
   };
 
