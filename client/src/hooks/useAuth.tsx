@@ -155,6 +155,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
     }
   }, [error, token, toast]);
+  
+  // Check if user is admin and redirect to admin dashboard
+  useEffect(() => {
+    if (user && user.role === "admin") {
+      setLocation("/admin");
+    }
+  }, [user, setLocation]);
 
   // Login function
   const login = async (email: string, password: string, rememberMe: boolean = false) => {

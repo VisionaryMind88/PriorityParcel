@@ -148,6 +148,10 @@ export default function LoginPage() {
                   >
                     {isLoading ? "Inloggen..." : "Inloggen"}
                   </Button>
+                  
+                  <div className="text-center text-xs text-gray-600 mt-2">
+                    Admin login: admin@priorityparcel.nl / admin123
+                  </div>
                 </form>
               </Form>
             </CardContent>
