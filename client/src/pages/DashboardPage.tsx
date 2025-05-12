@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
+import { useAuth } from "@/hooks/useAuth";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -155,13 +156,12 @@ export default function DashboardPage() {
   const [activeSidebarItem, setActiveSidebarItem] = useState("dashboard");
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const { user, isLoading, isAuthenticated, logout } = useAuth();
   
-  // Mock authentication check
+  // Authentication check
   useEffect(() => {
-    // In een echte implementatie zou hier een check zijn of de gebruiker is ingelogd
-    const isAuthenticated = true; // Mockwaarde
-    
-    if (!isAuthenticated) {
+    // If not loading and not authenticated, redirect to login
+    if (!isLoading && !isAuthenticated) {
       toast({
         title: "Niet ingelogd",
         description: "U moet ingelogd zijn om het dashboard te bekijken.",
@@ -169,7 +169,7 @@ export default function DashboardPage() {
       });
       setLocation("/login");
     }
-  }, [setLocation, toast]);
+  }, [isLoading, isAuthenticated, setLocation, toast]);
 
   // Functie om zendingen te filteren op basis van zoekopdracht
   const filterZendingen = (zendingen: typeof mockZendingen) => {
@@ -185,11 +185,7 @@ export default function DashboardPage() {
   const filteredZendingen = filterZendingen(mockZendingen);
 
   const handleLogout = () => {
-    toast({
-      title: "Uitgelogd",
-      description: "U bent succesvol uitgelogd.",
-    });
-    setLocation("/login");
+    logout(); // This will use the logout function from useAuth
   };
 
   // Render dashboard
@@ -252,7 +248,9 @@ export default function DashboardPage() {
               <div className="h-8 w-8 bg-primary text-white rounded-full flex items-center justify-center">
                 <User className="h-5 w-5" />
               </div>
-              <span className="text-sm font-medium">John Doe</span>
+              <span className="text-sm font-medium">
+                {user ? (user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.username) : "Laden..."}
+              </span>
             </div>
           </div>
         </header>
