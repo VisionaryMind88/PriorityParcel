@@ -1,159 +1,506 @@
+import { useState } from "react";
 import { Link } from "wouter";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import { Package } from "lucide-react";
+import { apiRequest } from "@/lib/queryClient";
 
-// Type voor de functies in de prijspakketten
-interface PriceFeature {
-  text: string;
-  included: boolean;
-}
+// Validatieschema voor het prijzen/offerte formulier
+const priceFormSchema = z.object({
+  transportType: z.enum(["nationaal", "internationaal"]),
+  gewicht: z.enum(["0-5", "5-10", "10-20", "20-50", "50+"]),
+  afmetingen: z.enum(["klein", "middel", "groot", "extra-groot"]),
+  spoed: z.enum(["standaard", "spoed", "extra-spoed"]),
+  naam: z.string().min(2, { message: "Naam moet minimaal 2 tekens bevatten" }),
+  bedrijf: z.string().optional(),
+  email: z.string().email({ message: "Voer een geldig e-mailadres in" }),
+  telefoon: z.string().min(10, { message: "Voer een geldig telefoonnummer in" }),
+  ophaladres: z.string().min(5, { message: "Vul een geldig ophaladres in" }),
+  afleveradres: z.string().min(5, { message: "Vul een geldig afleveradres in" }),
+  bericht: z.string().optional(),
+});
 
-// Type voor de prijspakketten
-interface PricePackage {
-  name: string;
-  description: string;
-  price: string;
-  priceDetail: string;
-  features: PriceFeature[];
-  isPopular?: boolean;
-  buttonText: string;
-}
+type PriceFormValues = z.infer<typeof priceFormSchema>;
 
-// Prijspakketten data
-const pricingPackages: PricePackage[] = [
+// Indicatieve prijsinformatie
+const prijsIndicaties = [
   {
-    name: "Standaard",
-    description: "Voor incidentele zendingen",
-    price: "€9,95",
-    priceDetail: "per zending",
-    features: [
-      { text: "Levering binnen 2-3 werkdagen", included: true },
-      { text: "Online tracking", included: true },
-      { text: "Maximaal gewicht 10kg", included: true },
-      { text: "Verzekering tot €100", included: true },
-      { text: "24/7 klantenservice", included: false },
-      { text: "Doorsturen mogelijk", included: false },
-    ],
-    buttonText: "Offerte aanvragen",
+    type: "nationaal",
+    spoed: "standaard",
+    gewicht: "0-5",
+    prijs: "€7,95 - €12,95",
   },
   {
-    name: "Premium",
-    description: "Voor regelmatige verzenders",
-    price: "€14,95",
-    priceDetail: "per zending",
-    isPopular: true,
-    features: [
-      { text: "Levering volgende werkdag", included: true },
-      { text: "Online tracking", included: true },
-      { text: "Maximaal gewicht 25kg", included: true },
-      { text: "Verzekering tot €500", included: true },
-      { text: "24/7 klantenservice", included: true },
-      { text: "Doorsturen mogelijk", included: false },
-    ],
-    buttonText: "Offerte aanvragen",
+    type: "nationaal",
+    spoed: "spoed",
+    gewicht: "0-5",
+    prijs: "€15,95 - €19,95",
   },
   {
-    name: "Zakelijk",
-    description: "Voor zakelijke klanten",
-    price: "Op maat",
-    priceDetail: "vanaf €12,50 per zending",
-    features: [
-      { text: "Spoedlevering mogelijk", included: true },
-      { text: "Geavanceerde tracking", included: true },
-      { text: "Onbeperkt gewicht", included: true },
-      { text: "Uitgebreide verzekering", included: true },
-      { text: "24/7 klantenservice", included: true },
-      { text: "Doorsturen mogelijk", included: true },
-    ],
-    buttonText: "Persoonlijke offerte",
-  },
+    type: "internationaal",
+    spoed: "standaard",
+    gewicht: "0-5",
+    prijs: "€24,95 - €39,95",
+  }
 ];
 
 export default function PrijzenPage() {
+  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [prijsIndicatie, setPrijsIndicatie] = useState<string | null>(null);
+
+  const form = useForm<PriceFormValues>({
+    resolver: zodResolver(priceFormSchema),
+    defaultValues: {
+      transportType: "nationaal",
+      gewicht: "0-5",
+      afmetingen: "klein",
+      spoed: "standaard",
+      naam: "",
+      bedrijf: "",
+      email: "",
+      telefoon: "",
+      ophaladres: "",
+      afleveradres: "",
+      bericht: "",
+    },
+  });
+
+  // Functie om een prijsindicatie op te halen
+  const berekenPrijsIndicatie = (data: Partial<PriceFormValues>) => {
+    // Controleer of de benodigde velden zijn ingevuld
+    if (!data.transportType || !data.gewicht || !data.spoed) {
+      return null;
+    }
+
+    // Zoek een match in de prijsindicaties
+    const match = prijsIndicaties.find(
+      (p) => 
+        p.type === data.transportType && 
+        p.gewicht === data.gewicht && 
+        p.spoed === data.spoed
+    );
+
+    if (match) {
+      return match.prijs;
+    }
+
+    // Als geen exacte match, genereer een schatting op basis van gewicht en transportType
+    if (data.transportType === "nationaal") {
+      switch (data.gewicht) {
+        case "0-5": return data.spoed === "standaard" ? "€7,95 - €12,95" : "€15,95 - €19,95";
+        case "5-10": return data.spoed === "standaard" ? "€10,95 - €15,95" : "€18,95 - €24,95";
+        case "10-20": return data.spoed === "standaard" ? "€14,95 - €19,95" : "€22,95 - €29,95";
+        case "20-50": return data.spoed === "standaard" ? "€19,95 - €29,95" : "€29,95 - €39,95";
+        case "50+": return "Prijs op aanvraag";
+        default: return "Prijs op aanvraag";
+      }
+    } else {
+      // Internationaal
+      switch (data.gewicht) {
+        case "0-5": return data.spoed === "standaard" ? "€24,95 - €39,95" : "€34,95 - €49,95";
+        case "5-10": return data.spoed === "standaard" ? "€29,95 - €44,95" : "€39,95 - €59,95";
+        case "10-20": return data.spoed === "standaard" ? "€39,95 - €59,95" : "€49,95 - €79,95";
+        case "20-50": return data.spoed === "standaard" ? "€59,95 - €99,95" : "€79,95 - €119,95";
+        case "50+": return "Prijs op aanvraag";
+        default: return "Prijs op aanvraag";
+      }
+    }
+  };
+
+  // Update prijs wanneer relevante waardes wijzigen
+  const updatePrijsIndicatie = () => {
+    const values = form.getValues();
+    const prijs = berekenPrijsIndicatie(values);
+    setPrijsIndicatie(prijs);
+  };
+
+  // Handler voor het versturen van het formulier
+  const onSubmit = async (data: PriceFormValues) => {
+    setIsSubmitting(true);
+    try {
+      await apiRequest("/api/prijsofferte", "POST", {
+        ...data,
+        // Voeg timestamp toe
+        timestamp: new Date().toISOString(),
+        // Het email adres waar de offerte naartoe moet
+        toEmail: "info@priorityparcel.nl",
+        // Voeg de prijsindicatie toe
+        prijsIndicatie: prijsIndicatie || "Onbekend"
+      });
+
+      toast({
+        title: "Offerte aangevraagd!",
+        description: "We sturen u zo spoedig mogelijk een nauwkeurige prijsopgave",
+      });
+
+      form.reset();
+      setPrijsIndicatie(null);
+    } catch (error) {
+      console.error("Error submitting price form:", error);
+      toast({
+        title: "Er is iets misgegaan",
+        description: "Probeer het later nog eens of neem telefonisch contact op.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
       <main className="flex-grow">
         <section className="py-12 bg-gradient-to-b from-gray-50 to-white">
           <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
+            <div className="text-center mb-10">
               <h1 className="text-3xl md:text-4xl font-bold text-primary mb-4">
-                Onze prijzen
+                Prijzen en offertes
               </h1>
               <p className="text-gray-600 max-w-2xl mx-auto">
-                Transparante prijzen voor al uw transportbehoeften. Kies het pakket dat bij uw situatie past of vraag een persoonlijke offerte aan voor maatwerk.
+                Bereken direct een prijsindicatie voor uw zending door onderstaand formulier in te vullen. 
+                Voor een exacte offerte op maat, vul dan het hele formulier in en wij nemen contact met u op.
               </p>
             </div>
 
             <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-              {pricingPackages.map((pkg, index) => (
-                <Card 
-                  key={index} 
-                  className={`border ${pkg.isPopular ? 'border-accent shadow-lg relative' : 'border-gray-200'}`}
-                >
-                  {pkg.isPopular && (
-                    <div className="absolute top-0 right-0 transform translate-x-2 -translate-y-2">
-                      <span className="bg-accent text-white text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
-                        Populair
-                      </span>
+              <div className="md:col-span-2">
+                <Card className="bg-white shadow-md">
+                  <CardContent className="pt-6">
+                    <Form {...form}>
+                      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                        <div className="grid md:grid-cols-2 gap-6">
+                          <div className="space-y-4">
+                            <h3 className="text-lg font-semibold text-primary flex items-center">
+                              <Package className="mr-2" size={20} />
+                              Zendingsinformatie
+                            </h3>
+                            
+                            <FormField
+                              control={form.control}
+                              name="transportType"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Type transport</FormLabel>
+                                  <Select 
+                                    onValueChange={(value) => {
+                                      field.onChange(value);
+                                      updatePrijsIndicatie();
+                                    }} 
+                                    defaultValue={field.value}
+                                  >
+                                    <FormControl>
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Selecteer type" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      <SelectItem value="nationaal">Nationaal (binnen Nederland)</SelectItem>
+                                      <SelectItem value="internationaal">Internationaal</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
+                            <FormField
+                              control={form.control}
+                              name="gewicht"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Gewicht</FormLabel>
+                                  <Select 
+                                    onValueChange={(value) => {
+                                      field.onChange(value);
+                                      updatePrijsIndicatie();
+                                    }} 
+                                    defaultValue={field.value}
+                                  >
+                                    <FormControl>
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Selecteer gewicht" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      <SelectItem value="0-5">0-5 kg</SelectItem>
+                                      <SelectItem value="5-10">5-10 kg</SelectItem>
+                                      <SelectItem value="10-20">10-20 kg</SelectItem>
+                                      <SelectItem value="20-50">20-50 kg</SelectItem>
+                                      <SelectItem value="50+">50+ kg</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
+                            <FormField
+                              control={form.control}
+                              name="afmetingen"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Afmetingen pakket</FormLabel>
+                                  <Select 
+                                    onValueChange={(value) => {
+                                      field.onChange(value);
+                                      updatePrijsIndicatie();
+                                    }} 
+                                    defaultValue={field.value}
+                                  >
+                                    <FormControl>
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Selecteer afmetingen" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      <SelectItem value="klein">Klein (max. 30x20x10 cm)</SelectItem>
+                                      <SelectItem value="middel">Middel (max. 60x40x30 cm)</SelectItem>
+                                      <SelectItem value="groot">Groot (max. 100x60x50 cm)</SelectItem>
+                                      <SelectItem value="extra-groot">Extra groot (groter)</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
+                            <FormField
+                              control={form.control}
+                              name="spoed"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Bezorgsnelheid</FormLabel>
+                                  <Select 
+                                    onValueChange={(value) => {
+                                      field.onChange(value);
+                                      updatePrijsIndicatie();
+                                    }} 
+                                    defaultValue={field.value}
+                                  >
+                                    <FormControl>
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Selecteer snelheid" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      <SelectItem value="standaard">Standaard (2-3 werkdagen)</SelectItem>
+                                      <SelectItem value="spoed">Spoed (volgende werkdag)</SelectItem>
+                                      <SelectItem value="extra-spoed">Extra spoed (vandaag)</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+
+                          <div className="space-y-4">
+                            <h3 className="text-lg font-semibold text-primary">Uw gegevens</h3>
+                            
+                            <FormField
+                              control={form.control}
+                              name="naam"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Naam</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="Uw volledige naam" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={form.control}
+                              name="bedrijf"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Bedrijfsnaam (optioneel)</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="Uw bedrijfsnaam" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={form.control}
+                              name="email"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>E-mailadres</FormLabel>
+                                  <FormControl>
+                                    <Input type="email" placeholder="uw@email.nl" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={form.control}
+                              name="telefoon"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Telefoonnummer</FormLabel>
+                                  <FormControl>
+                                    <Input type="tel" placeholder="06 12345678" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-6">
+                          <FormField
+                            control={form.control}
+                            name="ophaladres"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Ophaladres</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="Straat, huisnummer, postcode, plaats" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          
+                          <FormField
+                            control={form.control}
+                            name="afleveradres"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Afleveradres</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="Straat, huisnummer, postcode, plaats" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+
+                        <FormField
+                          control={form.control}
+                          name="bericht"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Extra informatie (optioneel)</FormLabel>
+                              <FormControl>
+                                <Textarea
+                                  placeholder="Speciale instructies of vragen..."
+                                  className="min-h-[80px]"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <div className="flex justify-center mt-6">
+                          <Button 
+                            type="submit" 
+                            className="bg-accent hover:bg-accent/90 text-white px-8 py-2" 
+                            disabled={isSubmitting}
+                          >
+                            {isSubmitting ? "Bezig met verzenden..." : "Offerte aanvragen"}
+                          </Button>
+                        </div>
+                      </form>
+                    </Form>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div>
+                <div className="bg-white p-6 rounded-lg shadow-md mb-6">
+                  <h3 className="text-lg font-semibold text-primary mb-4">Prijsindicatie</h3>
+                  
+                  {prijsIndicatie ? (
+                    <div className="space-y-4">
+                      <p className="text-gray-600">
+                        Op basis van de door u ingevulde gegevens schatten wij de kosten op:
+                      </p>
+                      <div className="text-center p-4 bg-gray-50 rounded-lg">
+                        <span className="block text-2xl font-bold text-primary">{prijsIndicatie}</span>
+                        <span className="text-sm text-gray-500">Indicatieve prijs (excl. BTW)</span>
+                      </div>
+                      <p className="text-xs text-gray-500">
+                        Dit is een schatting op basis van standaard tarieven. Voor een exacte offerte 
+                        die rekening houdt met alle details, vul het volledige formulier in.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <p className="text-gray-600 mb-3">
+                        Selecteer uw transporttype, gewicht en bezorgsnelheid voor een prijsindicatie.
+                      </p>
+                      <Button 
+                        type="button" 
+                        className="bg-primary hover:bg-primary/90 text-white"
+                        onClick={updatePrijsIndicatie}
+                      >
+                        Bereken indicatie
+                      </Button>
                     </div>
                   )}
-                  <CardHeader>
-                    <CardTitle className="text-xl">{pkg.name}</CardTitle>
-                    <CardDescription>{pkg.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="mb-6">
-                      <span className="text-3xl font-bold text-primary">{pkg.price}</span>
-                      <span className="text-gray-500 ml-2">{pkg.priceDetail}</span>
-                    </div>
-                    <ul className="space-y-3">
-                      {pkg.features.map((feature, idx) => (
-                        <li key={idx} className="flex items-start">
-                          <div className={`flex-shrink-0 h-5 w-5 ${feature.included ? 'text-accent' : 'text-gray-300'}`}>
-                            <Check size={20} />
-                          </div>
-                          <span className={`ml-3 ${feature.included ? 'text-gray-700' : 'text-gray-400'}`}>
-                            {feature.text}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                  <CardFooter className="flex justify-center">
-                    <Link href="/offerte">
-                      <Button 
-                        className={`w-full ${pkg.isPopular ? 'bg-accent hover:bg-accent/90' : 'bg-primary hover:bg-primary/90'}`}
-                      >
-                        {pkg.buttonText}
-                      </Button>
-                    </Link>
-                  </CardFooter>
-                </Card>
-              ))}
-            </div>
+                </div>
 
-            <div className="mt-16 bg-gray-50 rounded-lg p-8 max-w-4xl mx-auto">
-              <div className="text-center mb-6">
-                <h2 className="text-2xl font-bold text-primary">Heeft u specifieke wensen?</h2>
-                <p className="text-gray-600 mt-2">
-                  We bieden ook op maat gemaakte oplossingen voor speciale transportbehoeften.
-                </p>
-              </div>
-              <div className="flex flex-col items-center justify-center space-y-4 md:flex-row md:space-y-0 md:space-x-4">
-                <Link href="/offerte">
-                  <Button className="bg-accent hover:bg-accent/90 w-full md:w-auto">
-                    Vrijblijvende offerte aanvragen
-                  </Button>
-                </Link>
-                <Link href="/contact">
-                  <Button className="bg-white text-primary border border-primary hover:bg-gray-50 w-full md:w-auto">
-                    Neem contact op
-                  </Button>
-                </Link>
+                <div className="bg-white p-6 rounded-lg shadow-md">
+                  <h3 className="text-lg font-semibold text-primary mb-4">Waarom PriorityParcel?</h3>
+                  <ul className="space-y-3">
+                    <li className="flex items-start">
+                      <div className="flex-shrink-0 h-5 w-5 text-accent mt-0.5">
+                        <Package size={18} />
+                      </div>
+                      <span className="ml-3 text-gray-700">
+                        Voordelige tarieven voor alle formaten
+                      </span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="flex-shrink-0 h-5 w-5 text-accent mt-0.5">
+                        <Package size={18} />
+                      </div>
+                      <span className="ml-3 text-gray-700">
+                        Snelle en betrouwbare bezorging
+                      </span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="flex-shrink-0 h-5 w-5 text-accent mt-0.5">
+                        <Package size={18} />
+                      </div>
+                      <span className="ml-3 text-gray-700">
+                        24/7 online volgen van uw zending
+                      </span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="flex-shrink-0 h-5 w-5 text-accent mt-0.5">
+                        <Package size={18} />
+                      </div>
+                      <span className="ml-3 text-gray-700">
+                        Verschillende verzekerings­opties
+                      </span>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
 
@@ -165,13 +512,13 @@ export default function PrijzenPage() {
                 <div className="bg-white p-5 rounded-lg border border-gray-200">
                   <h3 className="font-semibold text-lg text-primary">Wat is er inbegrepen bij de prijs?</h3>
                   <p className="text-gray-600 mt-2">
-                    Onze prijzen zijn inclusief ophalen, transport en afleveren van uw zending. Afhankelijk van het gekozen pakket is ook tracking, verzekering en spoedlevering inbegrepen.
+                    Onze prijzen zijn inclusief ophalen, transport en afleveren van uw zending. De tracking van uw zending, basisverzekering en standaard customer service zijn altijd inbegrepen.
                   </p>
                 </div>
                 <div className="bg-white p-5 rounded-lg border border-gray-200">
                   <h3 className="font-semibold text-lg text-primary">Hoe werkt de verzekering?</h3>
                   <p className="text-gray-600 mt-2">
-                    Elke zending is standaard verzekerd tot een bepaald bedrag, afhankelijk van het gekozen pakket. Extra verzekering kan worden aangevraagd tegen een meerprijs.
+                    Elke zending is standaard verzekerd tot €100. Extra verzekering kan worden aangevraagd tegen een meerprijs. Bij internationaal transport gelden andere voorwaarden.
                   </p>
                 </div>
                 <div className="bg-white p-5 rounded-lg border border-gray-200">

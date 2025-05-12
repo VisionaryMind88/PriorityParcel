@@ -9,6 +9,7 @@ const quickLinks: FooterLink[] = [
   { label: "Home", href: "#home" },
   { label: "Diensten", href: "#diensten" },
   { label: "Over Ons", href: "#over-ons" },
+  { label: "Prijzen", href: "/prijzen" },
   { label: "Contact", href: "#contact" },
 ];
 
@@ -17,6 +18,11 @@ const serviceLinks: FooterLink[] = [
   { label: "Internationale Bezorging", href: "#diensten" },
   { label: "Spoedbezorging", href: "#diensten" },
   { label: "Zakelijke diensten", href: "#diensten" },
+];
+
+const extraLinks: FooterLink[] = [
+  { label: "Track & Trace", href: "/track-and-trace" },
+  { label: "Offerte Aanvragen", href: "/offerte" },
 ];
 
 const socialLinks = [
@@ -29,6 +35,14 @@ const socialLinks = [
 export default function Footer() {
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
+    
+    // Als het een volledige URL is, navigeren we daarheen
+    if (href.startsWith('/')) {
+      window.location.href = href;
+      return;
+    }
+    
+    // Anders scrollen we naar het element op de pagina
     const element = document.querySelector(href);
     if (element) {
       const offsetTop = element.getBoundingClientRect().top + window.pageYOffset - 100;
@@ -48,7 +62,7 @@ export default function Footer() {
   return (
     <footer className="bg-primary text-white py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid md:grid-cols-4 gap-8">
+        <div className="grid md:grid-cols-5 gap-8">
           <div>
             <h3 className="text-xl font-bold mb-4">PriorityParcel</h3>
             <p className="text-gray-300 mb-4">
@@ -89,6 +103,23 @@ export default function Footer() {
             <h3 className="text-lg font-bold mb-4">Diensten</h3>
             <ul className="space-y-2">
               {serviceLinks.map((link, index) => (
+                <li key={index}>
+                  <a
+                    href={link.href}
+                    className="text-gray-300 hover:text-white transition duration-150"
+                    onClick={(e) => handleNavClick(e, link.href)}
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+          
+          <div>
+            <h3 className="text-lg font-bold mb-4">Tools</h3>
+            <ul className="space-y-2">
+              {extraLinks.map((link, index) => (
                 <li key={index}>
                   <a
                     href={link.href}

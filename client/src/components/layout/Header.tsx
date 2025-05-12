@@ -45,6 +45,14 @@ export default function Header() {
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
+    
+    // Als het een volledige URL is, navigeren we daarheen
+    if (href.startsWith('/')) {
+      window.location.href = href;
+      return;
+    }
+    
+    // Anders scrollen we naar het element op de pagina
     const element = document.querySelector(href);
     if (element) {
       const offsetTop = element.getBoundingClientRect().top + window.pageYOffset - 100;
@@ -69,7 +77,7 @@ export default function Header() {
           </div>
           
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-8">
+          <nav className="hidden md:flex items-center space-x-8">
             {navLinks.map((link) => (
               <a
                 key={link.href}
@@ -80,6 +88,19 @@ export default function Header() {
                 {link.label}
               </a>
             ))}
+            
+            <div className="flex space-x-3">
+              {actionLinks.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className={`${link.label === "Offerte" ? "bg-accent" : "bg-primary"} text-white px-4 py-2 rounded-md hover:opacity-90 transition-opacity`}
+                  onClick={(e) => handleNavClick(e, link.href)}
+                >
+                  {link.label}
+                </a>
+              ))}
+            </div>
           </nav>
           
           {/* Mobile menu button */}
@@ -113,6 +134,18 @@ export default function Header() {
                   {link.label}
                 </a>
               ))}
+              <div className="pt-2 border-t border-gray-200">
+                {actionLinks.map((link) => (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    className={`${link.label === "Offerte" ? "bg-accent" : "bg-primary"} text-white px-4 py-2 rounded-md block my-3 text-center`}
+                    onClick={(e) => handleNavClick(e, link.href)}
+                  >
+                    {link.label}
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
         )}
