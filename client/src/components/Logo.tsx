@@ -1,5 +1,5 @@
 import React from 'react';
-import logoPath from '../assets/logo-new-blue.jpg';
+import logoPath from '../assets/logo-black.svg';
 
 interface LogoProps {
   className?: string;
