@@ -134,7 +134,7 @@ const SidebarItem = ({ icon: Icon, label, active, onClick }: {
   return (
     <div 
       className={`flex items-center space-x-3 px-4 py-3 rounded-lg cursor-pointer transition-colors ${
-        active ? "bg-primary text-white" : "hover:bg-gray-100"
+        active ? "bg-amber-600 text-white" : "hover:bg-gray-100"
       }`}
       onClick={onClick}
     >
@@ -200,7 +200,7 @@ export default function AdminDashboardPage() {
           variant: "destructive",
         });
         setLocation("/login");
-      } else if (user && user.role !== "admin") {
+      } else if (user && (user as any).role !== "admin") {
         toast({
           title: "Geen toegang",
           description: "U heeft geen admin rechten om deze pagina te bekijken.",
@@ -248,74 +248,25 @@ export default function AdminDashboardPage() {
       
       try {
         setLoadingKlanten(true);
-        // In een echte implementatie zou dit een aparte API endpoint zijn
-        const response = await fetch("/api/admin/klanten");
+        const response = await fetch("/api/admin/klanten", {
+          headers: {
+            "Authorization": `Bearer ${localStorage.getItem("authToken") || sessionStorage.getItem("authToken")}`
+          }
+        });
         
         if (!response.ok) {
-          // Voor demo gebruiken we de gegevens die we hebben
-          // In een echte implementatie zou dit een foutmelding geven
-          const demoKlanten: Klant[] = [
-            {
-              id: 1,
-              username: "husobosna",
-              email: "husobosna8@gmail.com",
-              firstName: "Huso",
-              lastName: "Bosna",
-              bedrijf: "Huso Logistics B.V.",
-              telefoon: "+31 6 12345678",
-              createdAt: new Date().toISOString(),
-              lastLogin: new Date().toISOString(),
-              isActive: true
-            },
-            {
-              id: 2,
-              username: "johndoe",
-              email: "john.doe@example.com",
-              firstName: "John",
-              lastName: "Doe",
-              bedrijf: "Voorbeeld BV",
-              telefoon: "+31 6 87654321",
-              createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-              lastLogin: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-              isActive: true
-            }
-          ];
-          setKlanten(demoKlanten);
-          return;
+          throw new Error("Fout bij het ophalen van klanten");
         }
         
         const data = await response.json();
         setKlanten(data);
       } catch (error) {
         console.error("Error fetching klanten:", error);
-        // Voor demo gebruiken we de gegevens die we hebben
-        const demoKlanten: Klant[] = [
-          {
-            id: 1,
-            username: "husobosna",
-            email: "husobosna8@gmail.com",
-            firstName: "Huso",
-            lastName: "Bosna",
-            bedrijf: "Huso Logistics B.V.",
-            telefoon: "+31 6 12345678",
-            createdAt: new Date().toISOString(),
-            lastLogin: new Date().toISOString(),
-            isActive: true
-          },
-          {
-            id: 2,
-            username: "johndoe",
-            email: "john.doe@example.com",
-            firstName: "John",
-            lastName: "Doe",
-            bedrijf: "Voorbeeld BV",
-            telefoon: "+31 6 87654321",
-            createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-            lastLogin: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-            isActive: true
-          }
-        ];
-        setKlanten(demoKlanten);
+        toast({
+          title: "Fout bij het laden van klanten",
+          description: "Er is een probleem opgetreden bij het ophalen van klantgegevens.",
+          variant: "destructive",
+        });
       } finally {
         setLoadingKlanten(false);
       }
@@ -331,7 +282,11 @@ export default function AdminDashboardPage() {
       
       try {
         setLoadingZendingen(true);
-        const response = await fetch("/api/zendingen");
+        const response = await fetch("/api/zendingen", {
+          headers: {
+            "Authorization": `Bearer ${localStorage.getItem("authToken") || sessionStorage.getItem("authToken")}`
+          }
+        });
         
         if (!response.ok) {
           throw new Error("Fout bij het ophalen van zendingen");
@@ -361,65 +316,25 @@ export default function AdminDashboardPage() {
       
       try {
         setLoadingContactMessages(true);
-        // In een echte implementatie zou dit een aparte API endpoint zijn
-        const response = await fetch("/api/admin/contact");
+        const response = await fetch("/api/admin/contact", {
+          headers: {
+            "Authorization": `Bearer ${localStorage.getItem("authToken") || sessionStorage.getItem("authToken")}`
+          }
+        });
         
         if (!response.ok) {
-          // Voor demo gebruiken we mock data
-          const demoContactMessages: ContactMessage[] = [
-            {
-              id: 1,
-              naam: "Peter Jansen",
-              email: "p.jansen@example.com",
-              telefoon: "+31 6 12345678",
-              bedrijf: "Jansen Transport",
-              bericht: "Ik zou graag meer informatie willen over jullie internationale transportdiensten.",
-              createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-              isBeantwoord: false
-            },
-            {
-              id: 2,
-              naam: "Anna de Vries",
-              email: "anna.devries@example.com",
-              telefoon: "+31 6 23456789",
-              bedrijf: null,
-              bericht: "Kunnen jullie ook kleine pakketten bezorgen in België?",
-              createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-              isBeantwoord: true
-            }
-          ];
-          setContactMessages(demoContactMessages);
-          return;
+          throw new Error("Fout bij het ophalen van contactberichten");
         }
         
         const data = await response.json();
         setContactMessages(data);
       } catch (error) {
         console.error("Error fetching contact messages:", error);
-        // Voor demo gebruiken we mock data
-        const demoContactMessages: ContactMessage[] = [
-          {
-            id: 1,
-            naam: "Peter Jansen",
-            email: "p.jansen@example.com",
-            telefoon: "+31 6 12345678",
-            bedrijf: "Jansen Transport",
-            bericht: "Ik zou graag meer informatie willen over jullie internationale transportdiensten.",
-            createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-            isBeantwoord: false
-          },
-          {
-            id: 2,
-            naam: "Anna de Vries",
-            email: "anna.devries@example.com",
-            telefoon: "+31 6 23456789",
-            bedrijf: null,
-            bericht: "Kunnen jullie ook kleine pakketten bezorgen in België?",
-            createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-            isBeantwoord: true
-          }
-        ];
-        setContactMessages(demoContactMessages);
+        toast({
+          title: "Fout bij het laden van berichten",
+          description: "Er is een probleem opgetreden bij het ophalen van contactberichten.",
+          variant: "destructive",
+        });
       } finally {
         setLoadingContactMessages(false);
       }
@@ -435,81 +350,25 @@ export default function AdminDashboardPage() {
       
       try {
         setLoadingPrijsOffertes(true);
-        // In een echte implementatie zou dit een aparte API endpoint zijn
-        const response = await fetch("/api/admin/prijsoffertes");
+        const response = await fetch("/api/admin/prijsoffertes", {
+          headers: {
+            "Authorization": `Bearer ${localStorage.getItem("authToken") || sessionStorage.getItem("authToken")}`
+          }
+        });
         
         if (!response.ok) {
-          // Voor demo gebruiken we mock data
-          const demoPrijsOffertes: PrijsOfferte[] = [
-            {
-              id: 1,
-              naam: "Karel Bakker",
-              email: "k.bakker@example.com",
-              telefoon: "+31 6 34567890",
-              bedrijf: "Bakker & Zonen",
-              transportType: "nationaal",
-              gewicht: "20-50",
-              afmetingen: "groot",
-              spoed: "standaard",
-              opmerkingen: "Levering moet op werkdagen tussen 9 en 17 uur.",
-              createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-              isVerwerkt: false
-            },
-            {
-              id: 2,
-              naam: "Sophie van Dijk",
-              email: "sophie.vandijk@example.com",
-              telefoon: "+31 6 45678901",
-              bedrijf: null,
-              transportType: "internationaal",
-              gewicht: "10-20",
-              afmetingen: "middel",
-              spoed: "spoed",
-              opmerkingen: null,
-              createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-              isVerwerkt: true
-            }
-          ];
-          setPrijsOffertes(demoPrijsOffertes);
-          return;
+          throw new Error("Fout bij het ophalen van prijsoffertes");
         }
         
         const data = await response.json();
         setPrijsOffertes(data);
       } catch (error) {
         console.error("Error fetching prijsoffertes:", error);
-        // Voor demo gebruiken we mock data
-        const demoPrijsOffertes: PrijsOfferte[] = [
-          {
-            id: 1,
-            naam: "Karel Bakker",
-            email: "k.bakker@example.com",
-            telefoon: "+31 6 34567890",
-            bedrijf: "Bakker & Zonen",
-            transportType: "nationaal",
-            gewicht: "20-50",
-            afmetingen: "groot",
-            spoed: "standaard",
-            opmerkingen: "Levering moet op werkdagen tussen 9 en 17 uur.",
-            createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-            isVerwerkt: false
-          },
-          {
-            id: 2,
-            naam: "Sophie van Dijk",
-            email: "sophie.vandijk@example.com",
-            telefoon: "+31 6 45678901",
-            bedrijf: null,
-            transportType: "internationaal",
-            gewicht: "10-20",
-            afmetingen: "middel",
-            spoed: "spoed",
-            opmerkingen: null,
-            createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-            isVerwerkt: true
-          }
-        ];
-        setPrijsOffertes(demoPrijsOffertes);
+        toast({
+          title: "Fout bij het laden van offertes",
+          description: "Er is een probleem opgetreden bij het ophalen van prijsoffertes.",
+          variant: "destructive",
+        });
       } finally {
         setLoadingPrijsOffertes(false);
       }
@@ -520,33 +379,29 @@ export default function AdminDashboardPage() {
 
   // Filter functies
   const filterZendingen = (zendingenData: Zending[]) => {
-    let filteredData = zendingenData;
+    // Filter op status indien van toepassing
+    let filteredData = statusFilter !== "alle" 
+      ? zendingenData.filter(z => z.status === statusFilter)
+      : zendingenData;
+      
+    // Filter op zoekterm indien van toepassing
+    if (!searchQuery) return filteredData;
     
-    // Filter op status indien niet 'alle'
-    if (statusFilter !== "alle") {
-      filteredData = filteredData.filter(zending => zending.status === statusFilter);
-    }
-    
-    // Filter op zoekopdracht
-    if (searchQuery) {
-      filteredData = filteredData.filter(zending => 
-        zending.trackingCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        zending.verzender.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        zending.ontvanger.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-    
-    return filteredData;
+    return filteredData.filter(zending => 
+      zending.trackingCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      zending.verzender.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      zending.ontvanger.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      zending.afleveradres.toLowerCase().includes(searchQuery.toLowerCase())
+    );
   };
   
   const filterKlanten = (klantenData: Klant[]) => {
     if (!searchQuery) return klantenData;
     
     return klantenData.filter(klant => 
-      (klant.username?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
-      (klant.email?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
-      ((klant.firstName || "") + " " + (klant.lastName || "")).toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (klant.bedrijf?.toLowerCase() || "").includes(searchQuery.toLowerCase())
+      `${klant.firstName} ${klant.lastName}`.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      klant.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (klant.bedrijf && klant.bedrijf.toLowerCase().includes(searchQuery.toLowerCase()))
     );
   };
   
@@ -556,8 +411,8 @@ export default function AdminDashboardPage() {
     return messagesData.filter(message => 
       message.naam.toLowerCase().includes(searchQuery.toLowerCase()) ||
       message.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (message.bedrijf?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
-      message.bericht.toLowerCase().includes(searchQuery.toLowerCase())
+      message.bericht.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (message.bedrijf && message.bedrijf.toLowerCase().includes(searchQuery.toLowerCase()))
     );
   };
   
@@ -567,434 +422,360 @@ export default function AdminDashboardPage() {
     return offertesData.filter(offerte => 
       offerte.naam.toLowerCase().includes(searchQuery.toLowerCase()) ||
       offerte.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (offerte.bedrijf?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
-      (offerte.opmerkingen?.toLowerCase() || "").includes(searchQuery.toLowerCase())
+      (offerte.bedrijf && offerte.bedrijf.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      offerte.transportType.toLowerCase().includes(searchQuery.toLowerCase())
     );
   };
-
-  // Gefilterde data
-  const filteredZendingen = filterZendingen(zendingen);
-  const filteredKlanten = filterKlanten(klanten);
-  const filteredContactMessages = filterContactMessages(contactMessages);
-  const filteredPrijsOffertes = filterPrijsOffertes(prijsOffertes);
   
-  // Aantal onbeantwoorde berichten en niet-verwerkte offertes
-  const nieuweBerichtenCount = contactMessages.filter(message => !message.isBeantwoord).length;
-  const nieuweOffertesCount = prijsOffertes.filter(offerte => !offerte.isVerwerkt).length;
-
-  // Logout handler
-  const handleLogout = () => {
-    logout();
-  };
-
+  // Render de admin dashboard
   return (
-    <div className="flex h-screen bg-gray-50">
-      {/* Sidebar */}
-      <div className="hidden md:flex flex-col w-64 bg-white shadow-sm border-r">
-        <div className="p-4 border-b bg-primary text-white">
-          <h2 className="text-xl font-bold">PriorityParcel</h2>
-          <p className="text-sm opacity-80">Admin Dashboard</p>
+    <div className="min-h-screen flex flex-col">
+      <div className="flex-1 flex">
+        {/* Sidebar */}
+        <div className="hidden md:flex md:w-64 md:flex-col bg-white border-r">
+          <div className="flex flex-col flex-grow overflow-y-auto">
+            <div className="flex items-center h-16 px-4 border-b bg-amber-600 text-white">
+              <Package className="mr-2 h-6 w-6" />
+              <span className="text-xl font-semibold">Admin Dashboard</span>
+            </div>
+            
+            <div className="px-3 py-4 space-y-1">
+              <SidebarItem 
+                icon={Home} 
+                label="Dashboard" 
+                active={activeSidebarItem === "dashboard"} 
+                onClick={() => setActiveSidebarItem("dashboard")}
+              />
+              <SidebarItem 
+                icon={Truck} 
+                label="Zendingen" 
+                active={activeSidebarItem === "zendingen"} 
+                onClick={() => {
+                  setActiveSidebarItem("zendingen");
+                  setActiveTab("zendingen");
+                }}
+              />
+              <SidebarItem 
+                icon={Users} 
+                label="Klanten" 
+                active={activeSidebarItem === "klanten"} 
+                onClick={() => {
+                  setActiveSidebarItem("klanten");
+                  setActiveTab("klanten");
+                }}
+              />
+              <SidebarItem 
+                icon={MessageSquare} 
+                label="Contactberichten" 
+                active={activeSidebarItem === "berichten"} 
+                onClick={() => {
+                  setActiveSidebarItem("berichten");
+                  setActiveTab("berichten");
+                }}
+              />
+              <SidebarItem 
+                icon={FileText} 
+                label="Prijsoffertes" 
+                active={activeSidebarItem === "offertes"} 
+                onClick={() => {
+                  setActiveSidebarItem("offertes");
+                  setActiveTab("offertes");
+                }}
+              />
+              <SidebarItem 
+                icon={BarChart3} 
+                label="Rapporten" 
+                active={activeSidebarItem === "rapporten"} 
+                onClick={() => {
+                  toast({
+                    title: "Rapporten",
+                    description: "De rapportage functie is nog in ontwikkeling.",
+                  });
+                }}
+              />
+              <SidebarItem 
+                icon={Settings} 
+                label="Instellingen" 
+                active={activeSidebarItem === "instellingen"} 
+                onClick={() => {
+                  toast({
+                    title: "Instellingen",
+                    description: "De instellingen functie is nog in ontwikkeling.",
+                  });
+                }}
+              />
+            </div>
+            
+            <div className="mt-auto">
+              <div className="px-3 py-4 border-t">
+                <SidebarItem 
+                  icon={LogOut} 
+                  label="Uitloggen" 
+                  onClick={() => {
+                    logout();
+                    setLocation("/login");
+                  }}
+                />
+              </div>
+            </div>
+          </div>
         </div>
         
-        <div className="flex-1 py-4 space-y-1 px-2">
-          <SidebarItem icon={Home} label="Dashboard" active={activeSidebarItem === "dashboard"} onClick={() => {
-            setActiveSidebarItem("dashboard");
-            setActiveTab("overzicht");
-          }} />
-          <SidebarItem icon={Users} label="Klanten" onClick={() => {
-            setActiveSidebarItem("klanten");
-            setActiveTab("klanten");
-          }} />
-          <SidebarItem icon={Package} label="Zendingen" onClick={() => {
-            setActiveSidebarItem("zendingen");
-            setActiveTab("zendingen");
-          }} />
-          <SidebarItem 
-            icon={MessageSquare} 
-            label={"Contactberichten" + (nieuweBerichtenCount > 0 ? ` (${nieuweBerichtenCount})` : "")}
-            onClick={() => {
-              setActiveSidebarItem("berichten");
-              setActiveTab("berichten");
-            }} 
-          />
-          <SidebarItem 
-            icon={FileText}
-            label={"Prijsoffertes" + (nieuweOffertesCount > 0 ? ` (${nieuweOffertesCount})` : "")}
-            onClick={() => {
-              setActiveSidebarItem("offertes");
-              setActiveTab("offertes");
-            }} 
-          />
-          <SidebarItem icon={BarChart3} label="Rapportages" onClick={() => {
-            setActiveSidebarItem("rapportages");
-            setActiveTab("rapportages");
-          }} />
-          <SidebarItem icon={Settings} label="Instellingen" onClick={() => {
-            setActiveSidebarItem("instellingen");
-            setActiveTab("instellingen");
-          }} />
-        </div>
-        
-        <div className="p-4 border-t">
-          <Button 
-            variant="outline" 
-            className="w-full justify-start" 
-            onClick={handleLogout}
-          >
-            <LogOut className="mr-2 h-4 w-4" />
-            Uitloggen
-          </Button>
-        </div>
-      </div>
-      
-      {/* Main content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
-        <header className="flex items-center justify-between p-4 bg-white shadow-sm">
-          <div className="flex items-center space-x-4">
-            <h1 className="text-xl font-semibold text-gray-800">Admin Dashboard</h1>
+        {/* Main content */}
+        <div className="flex-1 flex flex-col overflow-y-auto bg-gray-50">
+          {/* Top navbar */}
+          <div className="bg-amber-600 shadow-sm z-10 flex h-16 items-center justify-between px-4 md:px-6">
+            <div className="flex items-center space-x-3 md:hidden">
+              <button className="text-white hover:text-gray-100">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+              <div className="text-xl font-semibold text-white">Admin Dashboard</div>
+            </div>
+            <div className="hidden md:block text-xl font-semibold text-white">Admin Dashboard</div>
+            <div className="flex items-center space-x-4">
+              <Button 
+                variant="ghost" 
+                className="relative text-white hover:bg-amber-700"
+                onClick={() => toast({
+                  title: "Meldingen",
+                  description: "U heeft geen nieuwe meldingen.",
+                })}
+              >
+                <Bell size={20} />
+                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+              </Button>
+              <div className="relative">
+                <Button 
+                  variant="ghost" 
+                  className="flex items-center space-x-2 text-white hover:bg-amber-700"
+                  onClick={() => toast({
+                    title: "Gebruikersprofiel",
+                    description: "Gebruikersprofiel wordt nog ontwikkeld.",
+                  })}
+                >
+                  <div className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center">
+                    <User size={18} className="text-white" />
+                  </div>
+                  <div className="hidden md:block text-sm font-medium">
+                    {user?.firstName} {user?.lastName || 'Admin'}
+                  </div>
+                </Button>
+              </div>
+            </div>
           </div>
           
-          <div className="flex items-center space-x-4">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Zoeken..."
-                className="pl-9 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
-            </div>
-            
-            <button className="relative p-2 rounded-full hover:bg-gray-100">
-              <Bell className="h-5 w-5 text-gray-600" />
-              {(nieuweBerichtenCount + nieuweOffertesCount) > 0 && (
-                <span className="absolute top-0 right-0 h-3 w-3 bg-red-500 rounded-full border-2 border-white"></span>
-              )}
-            </button>
-            
-            <div className="flex items-center space-x-2">
-              <div className="h-8 w-8 bg-primary text-white rounded-full flex items-center justify-center">
-                <User className="h-5 w-5" />
-              </div>
-              <span className="text-sm font-medium">
-                {user ? (user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.username) : "Admin"}
-              </span>
-            </div>
-          </div>
-        </header>
-        
-        {/* Main dashboard */}
-        <main className="flex-1 overflow-y-auto p-4">
-          <Tabs defaultValue="overzicht" value={activeTab} onValueChange={setActiveTab}>
-            <div className="flex justify-between items-center mb-6">
-              <TabsList>
-                <TabsTrigger value="overzicht">Overzicht</TabsTrigger>
-                <TabsTrigger value="klanten">Klanten</TabsTrigger>
-                <TabsTrigger value="zendingen">Zendingen</TabsTrigger>
-                <TabsTrigger value="berichten">Berichten {nieuweBerichtenCount > 0 && `(${nieuweBerichtenCount})`}</TabsTrigger>
-                <TabsTrigger value="offertes">Offertes {nieuweOffertesCount > 0 && `(${nieuweOffertesCount})`}</TabsTrigger>
-              </TabsList>
-            </div>
-            
-            {/* Overzicht tab */}
-            <TabsContent value="overzicht" className="space-y-6">
-              {/* Stats cards */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between pb-2">
-                    <CardTitle className="text-sm font-medium">Actieve Zendingen</CardTitle>
-                    <Truck className="h-4 w-4 text-gray-500" />
-                  </CardHeader>
-                  <CardContent>
-                    {loadingStats ? (
-                      <div className="animate-pulse">
-                        <div className="h-8 w-16 bg-gray-200 rounded"></div>
-                        <div className="h-4 w-24 bg-gray-100 rounded mt-1"></div>
-                      </div>
-                    ) : (
-                      <>
-                        <div className="text-2xl font-bold">{statsData.actieveZendingen}</div>
-                        <p className="text-xs text-gray-500">van {statsData.totaalZendingen} zendingen</p>
-                      </>
-                    )}
-                  </CardContent>
-                </Card>
+          {/* Main content area */}
+          <main className="flex-1 p-4 md:p-6">
+            {/* Conditionally render main content based on the active tab */}
+            {activeSidebarItem === "dashboard" && (
+              <div className="space-y-6">
+                {/* Welcome banner for admin dashboard */}
+                <div className="bg-amber-600 text-white rounded-lg p-6 shadow-md">
+                  <h2 className="text-2xl font-bold mb-2">Welkom in het Admin Dashboard</h2>
+                  <p className="opacity-90">
+                    Hier kunt u alle zendingen, klanten, contactberichten en prijsoffertes beheren en overzien.
+                  </p>
+                </div>
                 
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between pb-2">
-                    <CardTitle className="text-sm font-medium">Klanten</CardTitle>
-                    <Users className="h-4 w-4 text-gray-500" />
-                  </CardHeader>
-                  <CardContent>
-                    {loadingKlanten ? (
-                      <div className="animate-pulse">
-                        <div className="h-8 w-16 bg-gray-200 rounded"></div>
-                        <div className="h-4 w-24 bg-gray-100 rounded mt-1"></div>
+                {/* Stats overview */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <Card>
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-gray-500">Totaal Zendingen</p>
+                          <h3 className="text-2xl font-bold mt-1">
+                            {loadingStats ? (
+                              <div className="h-8 w-16 bg-gray-200 animate-pulse rounded"></div>
+                            ) : (
+                              statsData.totaalZendingen
+                            )}
+                          </h3>
+                        </div>
+                        <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center">
+                          <Package className="h-6 w-6 text-primary" />
+                        </div>
                       </div>
-                    ) : (
-                      <>
-                        <div className="text-2xl font-bold">{klanten.length}</div>
-                        <p className="text-xs text-gray-500">geregistreerde klanten</p>
-                      </>
-                    )}
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card>
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-gray-500">Actieve Zendingen</p>
+                          <h3 className="text-2xl font-bold mt-1">
+                            {loadingStats ? (
+                              <div className="h-8 w-16 bg-gray-200 animate-pulse rounded"></div>
+                            ) : (
+                              statsData.actieveZendingen
+                            )}
+                          </h3>
+                        </div>
+                        <div className="h-12 w-12 bg-amber-100 rounded-full flex items-center justify-center">
+                          <Truck className="h-6 w-6 text-amber-600" />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card>
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-gray-500">Afgeleverd</p>
+                          <h3 className="text-2xl font-bold mt-1">
+                            {loadingStats ? (
+                              <div className="h-8 w-16 bg-gray-200 animate-pulse rounded"></div>
+                            ) : (
+                              statsData.afgeleverd
+                            )}
+                          </h3>
+                        </div>
+                        <div className="h-12 w-12 bg-green-100 rounded-full flex items-center justify-center">
+                          <CheckCircle className="h-6 w-6 text-green-600" />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card>
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-gray-500">Gem. Leveringstijd</p>
+                          <h3 className="text-2xl font-bold mt-1">
+                            {loadingStats ? (
+                              <div className="h-8 w-24 bg-gray-200 animate-pulse rounded"></div>
+                            ) : (
+                              statsData.gemiddeldeLeveringstijd
+                            )}
+                          </h3>
+                        </div>
+                        <div className="h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center">
+                          <Clock className="h-6 w-6 text-blue-600" />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
                 
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between pb-2">
-                    <CardTitle className="text-sm font-medium">Berichten</CardTitle>
-                    <MessageSquare className="h-4 w-4 text-gray-500" />
-                  </CardHeader>
-                  <CardContent>
-                    {loadingContactMessages ? (
-                      <div className="animate-pulse">
-                        <div className="h-8 w-16 bg-gray-200 rounded"></div>
-                        <div className="h-4 w-24 bg-gray-100 rounded mt-1"></div>
-                      </div>
-                    ) : (
-                      <>
-                        <div className="text-2xl font-bold">{nieuweBerichtenCount}</div>
-                        <p className="text-xs text-gray-500">onbeantwoorde berichten</p>
-                      </>
-                    )}
-                  </CardContent>
-                </Card>
-                
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between pb-2">
-                    <CardTitle className="text-sm font-medium">Offertes</CardTitle>
-                    <FileText className="h-4 w-4 text-gray-500" />
-                  </CardHeader>
-                  <CardContent>
-                    {loadingPrijsOffertes ? (
-                      <div className="animate-pulse">
-                        <div className="h-8 w-16 bg-gray-200 rounded"></div>
-                        <div className="h-4 w-24 bg-gray-100 rounded mt-1"></div>
-                      </div>
-                    ) : (
-                      <>
-                        <div className="text-2xl font-bold">{nieuweOffertesCount}</div>
-                        <p className="text-xs text-gray-500">nieuwe prijsaanvragen</p>
-                      </>
-                    )}
-                  </CardContent>
-                </Card>
-              </div>
-              
-              {/* Recente activiteiten */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Recente zendingen */}
-                <Card>
-                  <CardHeader className="flex justify-between">
-                    <div>
-                      <CardTitle>Recente Zendingen</CardTitle>
-                      <CardDescription>Meest recente verzendingen</CardDescription>
-                    </div>
-                    <Button variant="outline" size="sm" onClick={() => setActiveTab("zendingen")}>
-                      Alle zendingen
-                    </Button>
-                  </CardHeader>
-                  <CardContent>
-                    {loadingZendingen ? (
-                      <div className="space-y-4">
-                        {[1, 2, 3].map((i) => (
-                          <div key={i} className="p-3 bg-gray-50 rounded-lg">
-                            <div className="animate-pulse">
-                              <div className="flex justify-between mb-2">
-                                <div className="h-4 w-24 bg-gray-200 rounded"></div>
-                                <div className="h-4 w-16 bg-gray-200 rounded"></div>
-                              </div>
-                              <div className="h-3 w-48 bg-gray-100 rounded"></div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    ) : zendingen.length === 0 ? (
-                      <div className="text-center py-6">
-                        <Package className="h-10 w-10 mx-auto text-gray-300" />
-                        <p className="mt-2 text-gray-500">Geen zendingen beschikbaar</p>
-                      </div>
-                    ) : (
-                      <div className="space-y-2">
-                        {zendingen.slice(0, 5).map((zending) => (
-                          <div key={zending.id} className="p-3 bg-gray-50 rounded-lg flex justify-between items-center">
-                            <div>
-                              <div className="flex items-center gap-2">
-                                <span className="font-medium">{zending.trackingCode}</span>
-                                <StatusBadge status={zending.status} />
-                              </div>
-                              <p className="text-xs text-gray-500 mt-1">
-                                {zending.ontvanger} • {formatDate(zending.verzendDatum)}
-                              </p>
-                            </div>
-                            <Button variant="ghost" size="sm">
-                              <ChevronRight className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-                
-                {/* Recente berichten */}
-                <Card>
-                  <CardHeader className="flex justify-between">
-                    <div>
-                      <CardTitle>Nieuwe Berichten</CardTitle>
-                      <CardDescription>Onbeantwoorde contactberichten</CardDescription>
-                    </div>
-                    <Button variant="outline" size="sm" onClick={() => setActiveTab("berichten")}>
-                      Alle berichten
-                    </Button>
-                  </CardHeader>
-                  <CardContent>
-                    {loadingContactMessages ? (
-                      <div className="space-y-4">
-                        {[1, 2, 3].map((i) => (
-                          <div key={i} className="p-3 bg-gray-50 rounded-lg">
-                            <div className="animate-pulse">
-                              <div className="flex justify-between mb-2">
-                                <div className="h-4 w-32 bg-gray-200 rounded"></div>
-                                <div className="h-4 w-16 bg-gray-200 rounded"></div>
-                              </div>
-                              <div className="h-3 w-full bg-gray-100 rounded"></div>
-                              <div className="h-3 w-3/4 bg-gray-100 rounded mt-1"></div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    ) : contactMessages.filter(msg => !msg.isBeantwoord).length === 0 ? (
-                      <div className="text-center py-6">
-                        <MessageSquare className="h-10 w-10 mx-auto text-gray-300" />
-                        <p className="mt-2 text-gray-500">Geen nieuwe berichten</p>
-                      </div>
-                    ) : (
-                      <div className="space-y-2">
-                        {contactMessages.filter(msg => !msg.isBeantwoord).slice(0, 5).map((message) => (
-                          <div key={message.id} className="p-3 bg-gray-50 rounded-lg flex justify-between items-start">
-                            <div>
-                              <div className="font-medium">{message.naam}</div>
-                              <p className="text-xs text-gray-500">{message.email} • {formatDate(message.createdAt)}</p>
-                              <p className="text-sm mt-1 line-clamp-2">{message.bericht}</p>
-                            </div>
-                            <Button variant="ghost" size="sm">
-                              <Mail className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </div>
-            </TabsContent>
-            
-            {/* Klanten tab */}
-            <TabsContent value="klanten" className="space-y-6">
-              <Card>
-                <CardHeader className="flex justify-between">
-                  <div>
-                    <CardTitle>Klantenoverzicht</CardTitle>
-                    <CardDescription>Beheer alle klantaccounts</CardDescription>
-                  </div>
-                  <Button size="sm">
-                    <UserPlus className="h-4 w-4 mr-2" />
-                    Nieuwe Klant
-                  </Button>
-                </CardHeader>
-                <CardContent>
-                  {loadingKlanten ? (
-                    <div className="animate-pulse space-y-4">
-                      <div className="h-8 bg-gray-200 rounded w-full"></div>
-                      <div className="space-y-2">
-                        {[1, 2, 3, 4, 5].map((i) => (
-                          <div key={i} className="h-12 bg-gray-100 rounded w-full"></div>
-                        ))}
-                      </div>
-                    </div>
-                  ) : filteredKlanten.length === 0 ? (
-                    <div className="text-center py-10">
-                      <div className="flex justify-center">
-                        <Users className="h-16 w-16 text-gray-300" />
-                      </div>
-                      <h3 className="mt-4 text-lg font-semibold">Geen klanten gevonden</h3>
-                      <p className="mt-2 text-gray-500 max-w-md mx-auto">
-                        {searchQuery 
-                          ? "Er zijn geen klanten die overeenkomen met uw zoekopdracht"
-                          : "Er zijn nog geen klanten aangemaakt in het systeem."}
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="overflow-x-auto">
-                      <table className="w-full border-collapse">
-                        <thead>
-                          <tr className="border-b text-left">
-                            <th className="py-3 px-4 font-medium">Naam</th>
-                            <th className="py-3 px-4 font-medium">Email</th>
-                            <th className="py-3 px-4 font-medium">Bedrijf</th>
-                            <th className="py-3 px-4 font-medium">Telefoon</th>
-                            <th className="py-3 px-4 font-medium">Geregistreerd</th>
-                            <th className="py-3 px-4 font-medium">Laatst ingelogd</th>
-                            <th className="py-3 px-4 font-medium">Status</th>
-                            <th className="py-3 px-4 font-medium">Acties</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {filteredKlanten.map((klant) => (
-                            <tr key={klant.id} className="border-b hover:bg-gray-50">
-                              <td className="py-3 px-4 font-medium">
-                                {klant.firstName && klant.lastName 
-                                  ? `${klant.firstName} ${klant.lastName}` 
-                                  : klant.username}
-                              </td>
-                              <td className="py-3 px-4">{klant.email}</td>
-                              <td className="py-3 px-4">{klant.bedrijf || "-"}</td>
-                              <td className="py-3 px-4">{klant.telefoon || "-"}</td>
-                              <td className="py-3 px-4 text-sm">{formatDate(klant.createdAt)}</td>
-                              <td className="py-3 px-4 text-sm">{klant.lastLogin ? formatDate(klant.lastLogin) : "Nooit"}</td>
-                              <td className="py-3 px-4">
-                                <Badge variant={klant.isActive ? "default" : "destructive"}>
-                                  {klant.isActive ? "Actief" : "Inactief"}
-                                </Badge>
-                              </td>
-                              <td className="py-3 px-4">
-                                <div className="flex space-x-2">
-                                  <Button variant="ghost" size="icon">
-                                    <Eye className="h-4 w-4" />
-                                  </Button>
-                                  <Button variant="ghost" size="icon">
-                                    <Pencil className="h-4 w-4" />
-                                  </Button>
-                                  <Button variant="ghost" size="icon">
-                                    <Trash className="h-4 w-4" />
-                                  </Button>
-                                </div>
-                              </td>
-                            </tr>
+                {/* Additional admin stats */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Klanten Overzicht</CardTitle>
+                      <CardDescription>Totaal aantal: {klanten.length}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      {loadingKlanten ? (
+                        <div className="space-y-2">
+                          {[...Array(3)].map((_, i) => (
+                            <div key={i} className="h-12 bg-gray-100 rounded animate-pulse"></div>
                           ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          {klanten.slice(0, 5).map((klant) => (
+                            <div key={klant.id} className="flex justify-between items-center p-2 hover:bg-gray-50 rounded-md">
+                              <div className="flex items-center space-x-3">
+                                <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+                                  <User size={16} className="text-gray-500" />
+                                </div>
+                                <div>
+                                  <p className="font-medium">{klant.firstName} {klant.lastName}</p>
+                                  <p className="text-xs text-gray-500">{klant.email}</p>
+                                </div>
+                              </div>
+                              <ChevronRight size={16} className="text-gray-400" />
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      <Button 
+                        variant="ghost" 
+                        className="w-full mt-2" 
+                        onClick={() => {
+                          setActiveSidebarItem("klanten");
+                          setActiveTab("klanten");
+                        }}
+                      >
+                        Bekijk alle klanten
+                      </Button>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Recente Berichten</CardTitle>
+                      <CardDescription>Ongelezen: {contactMessages.filter(m => !m.isBeantwoord).length}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      {loadingContactMessages ? (
+                        <div className="space-y-2">
+                          {[...Array(3)].map((_, i) => (
+                            <div key={i} className="h-12 bg-gray-100 rounded animate-pulse"></div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          {contactMessages.slice(0, 5).map((message) => (
+                            <div key={message.id} className="flex justify-between items-center p-2 hover:bg-gray-50 rounded-md">
+                              <div className="flex items-center space-x-3">
+                                <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+                                  <MessageSquare size={16} className="text-gray-500" />
+                                </div>
+                                <div>
+                                  <p className="font-medium">{message.naam}</p>
+                                  <p className="text-xs text-gray-500">{message.email}</p>
+                                </div>
+                              </div>
+                              {!message.isBeantwoord && (
+                                <Badge className="bg-red-100 text-red-800 hover:bg-red-200">Nieuw</Badge>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      <Button 
+                        variant="ghost" 
+                        className="w-full mt-2" 
+                        onClick={() => {
+                          setActiveSidebarItem("berichten");
+                          setActiveTab("berichten");
+                        }}
+                      >
+                        Bekijk alle berichten
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            )}
             
             {/* Zendingen tab */}
-            <TabsContent value="zendingen" className="space-y-6">
-              <Card>
-                <CardHeader className="flex justify-between">
-                  <div>
-                    <CardTitle>Alle Zendingen</CardTitle>
-                    <CardDescription>Beheer en monitor alle zendingen</CardDescription>
-                  </div>
-                  <div className="flex space-x-2">
+            {activeSidebarItem === "zendingen" && (
+              <div className="space-y-6">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                  <h2 className="text-2xl font-bold">Alle Zendingen</h2>
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      <Input 
+                        placeholder="Zoek op tracking code, naam, etc." 
+                        className="pl-10 w-full md:w-64" 
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                      />
+                    </div>
                     <Select value={statusFilter} onValueChange={setStatusFilter}>
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Alle statussen" />
+                      <SelectTrigger className="w-full md:w-40">
+                        <div className="flex items-center">
+                          <Filter className="mr-2 h-4 w-4" />
+                          <SelectValue placeholder="Filter" />
+                        </div>
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="alle">Alle statussen</SelectItem>
@@ -1006,310 +787,369 @@ export default function AdminDashboardPage() {
                         <SelectItem value="geannuleerd">Geannuleerd</SelectItem>
                       </SelectContent>
                     </Select>
-                    <Button>
-                      <Truck className="mr-2 h-4 w-4" />
+                    <Button className="bg-amber-600 hover:bg-amber-700">
+                      <UserPlus className="mr-2 h-4 w-4" />
                       Nieuwe Zending
                     </Button>
                   </div>
-                </CardHeader>
-                <CardContent>
-                  {loadingZendingen ? (
-                    <div className="animate-pulse space-y-4">
-                      <div className="h-8 bg-gray-200 rounded w-full"></div>
-                      <div className="space-y-2">
-                        {[1, 2, 3, 4, 5].map((i) => (
-                          <div key={i} className="h-12 bg-gray-100 rounded w-full"></div>
+                </div>
+                
+                <Card>
+                  <CardContent className="p-0">
+                    {loadingZendingen ? (
+                      <div className="p-6 space-y-4">
+                        {[...Array(5)].map((_, i) => (
+                          <div key={i} className="h-16 bg-gray-100 rounded animate-pulse"></div>
                         ))}
                       </div>
-                    </div>
-                  ) : filteredZendingen.length === 0 ? (
-                    <div className="text-center py-10">
-                      <div className="flex justify-center">
-                        <Package className="h-16 w-16 text-gray-300" />
-                      </div>
-                      <h3 className="mt-4 text-lg font-semibold">Geen zendingen gevonden</h3>
-                      <p className="mt-2 text-gray-500 max-w-md mx-auto">
-                        {searchQuery || statusFilter !== "alle"
-                          ? "Er zijn geen zendingen die overeenkomen met uw filters"
-                          : "Er zijn nog geen zendingen aangemaakt in het systeem."}
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="overflow-x-auto">
-                      <table className="w-full border-collapse">
-                        <thead>
-                          <tr className="border-b text-left">
-                            <th className="py-3 px-4 font-medium">Tracking Code</th>
-                            <th className="py-3 px-4 font-medium">Status</th>
-                            <th className="py-3 px-4 font-medium">Verzender</th>
-                            <th className="py-3 px-4 font-medium">Ontvanger</th>
-                            <th className="py-3 px-4 font-medium">Verzonden</th>
-                            <th className="py-3 px-4 font-medium">Verwachte levering</th>
-                            <th className="py-3 px-4 font-medium">Prioriteit</th>
-                            <th className="py-3 px-4 font-medium">Prijs</th>
-                            <th className="py-3 px-4 font-medium">Betaald</th>
-                            <th className="py-3 px-4 font-medium">Acties</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {filteredZendingen.map((zending) => (
-                            <tr key={zending.id} className="border-b hover:bg-gray-50">
-                              <td className="py-3 px-4 font-medium">{zending.trackingCode}</td>
-                              <td className="py-3 px-4">
-                                <StatusBadge status={zending.status} />
-                              </td>
-                              <td className="py-3 px-4">{zending.verzender}</td>
-                              <td className="py-3 px-4">{zending.ontvanger}</td>
-                              <td className="py-3 px-4 text-sm">{formatDate(zending.verzendDatum)}</td>
-                              <td className="py-3 px-4 text-sm">{formatDate(zending.geplanndeAfleverDatum)}</td>
-                              <td className="py-3 px-4">
-                                <Badge variant={zending.prioriteit === "spoed" ? "destructive" : zending.prioriteit === "extra-spoed" ? "destructive" : "outline"}>
-                                  {zending.prioriteit}
-                                </Badge>
-                              </td>
-                              <td className="py-3 px-4 font-medium">{zending.prijs}</td>
-                              <td className="py-3 px-4">
-                                <Badge variant={zending.betaald ? "default" : "destructive"}>
-                                  {zending.betaald ? "Betaald" : "Niet betaald"}
-                                </Badge>
-                              </td>
-                              <td className="py-3 px-4">
-                                <div className="flex space-x-1">
-                                  <Button variant="ghost" size="icon">
-                                    <Eye className="h-4 w-4" />
-                                  </Button>
-                                  <Button variant="ghost" size="icon">
-                                    <Pencil className="h-4 w-4" />
-                                  </Button>
-                                </div>
-                              </td>
+                    ) : (
+                      <div className="overflow-x-auto">
+                        <table className="w-full">
+                          <thead>
+                            <tr className="bg-gray-50 border-b">
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tracking Code</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Verzender</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ontvanger</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Verzenddatum</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Afleverdatum</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acties</th>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                          </thead>
+                          <tbody className="bg-white divide-y divide-gray-200">
+                            {filterZendingen(zendingen).map((zending) => (
+                              <tr key={zending.id} className="hover:bg-gray-50">
+                                <td className="px-4 py-4 whitespace-nowrap">
+                                  <div className="font-medium text-amber-600">{zending.trackingCode}</div>
+                                </td>
+                                <td className="px-4 py-4 whitespace-nowrap">
+                                  <StatusBadge status={zending.status} />
+                                </td>
+                                <td className="px-4 py-4 whitespace-nowrap">{zending.verzender}</td>
+                                <td className="px-4 py-4 whitespace-nowrap">{zending.ontvanger}</td>
+                                <td className="px-4 py-4 whitespace-nowrap">{formatDate(zending.verzendDatum)}</td>
+                                <td className="px-4 py-4 whitespace-nowrap">
+                                  {zending.werkelijkeAfleverDatum 
+                                    ? formatDate(zending.werkelijkeAfleverDatum) 
+                                    : formatDate(zending.geplanndeAfleverDatum)}
+                                </td>
+                                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                                  <div className="flex items-center space-x-2">
+                                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                      <Eye className="h-4 w-4" />
+                                    </Button>
+                                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                      <Pencil className="h-4 w-4" />
+                                    </Button>
+                                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-red-500 hover:text-red-700">
+                                      <Trash className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+            
+            {/* Klanten tab */}
+            {activeSidebarItem === "klanten" && (
+              <div className="space-y-6">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                  <h2 className="text-2xl font-bold">Klantenbeheer</h2>
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      <Input 
+                        placeholder="Zoek op naam, bedrijf, e-mail..." 
+                        className="pl-10 w-full md:w-64" 
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                      />
                     </div>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
+                    <Button className="bg-amber-600 hover:bg-amber-700">
+                      <UserPlus className="mr-2 h-4 w-4" />
+                      Nieuwe Klant
+                    </Button>
+                  </div>
+                </div>
+                
+                <Card>
+                  <CardContent className="p-0">
+                    {loadingKlanten ? (
+                      <div className="p-6 space-y-4">
+                        {[...Array(5)].map((_, i) => (
+                          <div key={i} className="h-16 bg-gray-100 rounded animate-pulse"></div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="overflow-x-auto">
+                        <table className="w-full">
+                          <thead>
+                            <tr className="bg-gray-50 border-b">
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Naam</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bedrijf</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Telefoon</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Geregistreerd</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Laatste login</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acties</th>
+                            </tr>
+                          </thead>
+                          <tbody className="bg-white divide-y divide-gray-200">
+                            {filterKlanten(klanten).map((klant) => (
+                              <tr key={klant.id} className="hover:bg-gray-50">
+                                <td className="px-4 py-4 whitespace-nowrap">
+                                  <div className="font-medium">
+                                    {klant.firstName} {klant.lastName}
+                                  </div>
+                                </td>
+                                <td className="px-4 py-4 whitespace-nowrap">{klant.email}</td>
+                                <td className="px-4 py-4 whitespace-nowrap">{klant.bedrijf || '-'}</td>
+                                <td className="px-4 py-4 whitespace-nowrap">{klant.telefoon || '-'}</td>
+                                <td className="px-4 py-4 whitespace-nowrap">{formatDate(klant.createdAt)}</td>
+                                <td className="px-4 py-4 whitespace-nowrap">{klant.lastLogin ? formatDate(klant.lastLogin) : '-'}</td>
+                                <td className="px-4 py-4 whitespace-nowrap">
+                                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                    klant.isActive 
+                                      ? 'bg-green-100 text-green-800' 
+                                      : 'bg-red-100 text-red-800'
+                                  }`}>
+                                    {klant.isActive ? 'Actief' : 'Inactief'}
+                                  </span>
+                                </td>
+                                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                                  <div className="flex items-center space-x-2">
+                                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                      <Eye className="h-4 w-4" />
+                                    </Button>
+                                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                      <Pencil className="h-4 w-4" />
+                                    </Button>
+                                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-red-500 hover:text-red-700">
+                                      <Trash className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            )}
             
             {/* Berichten tab */}
-            <TabsContent value="berichten" className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Contactberichten</CardTitle>
-                  <CardDescription>Beheer berichten van de contactpagina</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {loadingContactMessages ? (
-                    <div className="animate-pulse space-y-4">
-                      <div className="h-8 bg-gray-200 rounded w-full"></div>
-                      <div className="space-y-2">
-                        {[1, 2, 3, 4].map((i) => (
-                          <div key={i} className="h-24 bg-gray-100 rounded w-full"></div>
+            {activeSidebarItem === "berichten" && (
+              <div className="space-y-6">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                  <h2 className="text-2xl font-bold">Contactberichten</h2>
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      <Input 
+                        placeholder="Zoek in berichten..." 
+                        className="pl-10 w-full md:w-64" 
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                      />
+                    </div>
+                    <Select defaultValue="all">
+                      <SelectTrigger className="w-full md:w-40">
+                        <div className="flex items-center">
+                          <Filter className="mr-2 h-4 w-4" />
+                          <SelectValue placeholder="Filter" />
+                        </div>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Alle berichten</SelectItem>
+                        <SelectItem value="unread">Onbeantwoord</SelectItem>
+                        <SelectItem value="read">Beantwoord</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                
+                <Card>
+                  <CardContent className="p-0">
+                    {loadingContactMessages ? (
+                      <div className="p-6 space-y-4">
+                        {[...Array(5)].map((_, i) => (
+                          <div key={i} className="h-16 bg-gray-100 rounded animate-pulse"></div>
                         ))}
                       </div>
-                    </div>
-                  ) : filteredContactMessages.length === 0 ? (
-                    <div className="text-center py-10">
-                      <div className="flex justify-center">
-                        <MessageSquare className="h-16 w-16 text-gray-300" />
+                    ) : (
+                      <div className="overflow-x-auto">
+                        <table className="w-full">
+                          <thead>
+                            <tr className="bg-gray-50 border-b">
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Naam</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bedrijf</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bericht</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Datum</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acties</th>
+                            </tr>
+                          </thead>
+                          <tbody className="bg-white divide-y divide-gray-200">
+                            {filterContactMessages(contactMessages).map((message) => (
+                              <tr key={message.id} className="hover:bg-gray-50">
+                                <td className="px-4 py-4 whitespace-nowrap">
+                                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                    message.isBeantwoord 
+                                      ? 'bg-green-100 text-green-800' 
+                                      : 'bg-amber-100 text-amber-800'
+                                  }`}>
+                                    {message.isBeantwoord ? 'Beantwoord' : 'Nieuw'}
+                                  </span>
+                                </td>
+                                <td className="px-4 py-4 whitespace-nowrap">
+                                  <div className="font-medium">{message.naam}</div>
+                                </td>
+                                <td className="px-4 py-4 whitespace-nowrap">{message.email}</td>
+                                <td className="px-4 py-4 whitespace-nowrap">{message.bedrijf || '-'}</td>
+                                <td className="px-4 py-4">
+                                  <div className="max-w-xs overflow-hidden text-ellipsis whitespace-nowrap">
+                                    {message.bericht}
+                                  </div>
+                                </td>
+                                <td className="px-4 py-4 whitespace-nowrap">{formatDate(message.createdAt)}</td>
+                                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                                  <div className="flex items-center space-x-2">
+                                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                      <Eye className="h-4 w-4" />
+                                    </Button>
+                                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                      <Mail className="h-4 w-4" />
+                                    </Button>
+                                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-red-500 hover:text-red-700">
+                                      <Trash className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
                       </div>
-                      <h3 className="mt-4 text-lg font-semibold">Geen berichten gevonden</h3>
-                      <p className="mt-2 text-gray-500 max-w-md mx-auto">
-                        {searchQuery 
-                          ? "Er zijn geen berichten die overeenkomen met uw zoekopdracht"
-                          : "Er zijn nog geen contactberichten ontvangen."}
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="space-y-6">
-                      {filteredContactMessages.map((message) => (
-                        <Card key={message.id} className={`overflow-hidden ${!message.isBeantwoord ? 'border-l-4 border-l-blue-500' : ''}`}>
-                          <CardHeader className="pb-2">
-                            <div className="flex justify-between">
-                              <div>
-                                <CardTitle className="flex items-center">
-                                  <span>{message.naam}</span>
-                                  {!message.isBeantwoord && (
-                                    <Badge className="ml-2" variant="default">Nieuw</Badge>
-                                  )}
-                                </CardTitle>
-                                <CardDescription>
-                                  {message.email} • {message.telefoon} {message.bedrijf ? `• ${message.bedrijf}` : ''}
-                                </CardDescription>
-                              </div>
-                              <div className="text-sm text-gray-500">
-                                {formatDate(message.createdAt)}
-                              </div>
-                            </div>
-                          </CardHeader>
-                          <CardContent className="pb-2">
-                            <p className="whitespace-pre-line">{message.bericht}</p>
-                          </CardContent>
-                          <div className="px-6 pb-4 flex justify-end space-x-2">
-                            <Button variant="outline" size="sm">
-                              {message.isBeantwoord ? "Al beantwoord" : "Markeer als beantwoord"}
-                            </Button>
-                            <Button size="sm">
-                              <Mail className="mr-2 h-4 w-4" />
-                              Beantwoorden
-                            </Button>
-                          </div>
-                        </Card>
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            )}
             
-            {/* Offertes tab */}
-            <TabsContent value="offertes" className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Prijsoffertes</CardTitle>
-                  <CardDescription>Beheer prijsaanvragen van klanten</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {loadingPrijsOffertes ? (
-                    <div className="animate-pulse space-y-4">
-                      <div className="h-8 bg-gray-200 rounded w-full"></div>
-                      <div className="space-y-2">
-                        {[1, 2, 3, 4].map((i) => (
-                          <div key={i} className="h-24 bg-gray-100 rounded w-full"></div>
+            {/* Prijsoffertes tab */}
+            {activeSidebarItem === "offertes" && (
+              <div className="space-y-6">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                  <h2 className="text-2xl font-bold">Prijsofferte Aanvragen</h2>
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      <Input 
+                        placeholder="Zoek in offertes..." 
+                        className="pl-10 w-full md:w-64" 
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                      />
+                    </div>
+                    <Select defaultValue="all">
+                      <SelectTrigger className="w-full md:w-40">
+                        <div className="flex items-center">
+                          <Filter className="mr-2 h-4 w-4" />
+                          <SelectValue placeholder="Filter" />
+                        </div>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Alle offertes</SelectItem>
+                        <SelectItem value="pending">Niet verwerkt</SelectItem>
+                        <SelectItem value="processed">Verwerkt</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                
+                <Card>
+                  <CardContent className="p-0">
+                    {loadingPrijsOffertes ? (
+                      <div className="p-6 space-y-4">
+                        {[...Array(5)].map((_, i) => (
+                          <div key={i} className="h-16 bg-gray-100 rounded animate-pulse"></div>
                         ))}
                       </div>
-                    </div>
-                  ) : filteredPrijsOffertes.length === 0 ? (
-                    <div className="text-center py-10">
-                      <div className="flex justify-center">
-                        <FileText className="h-16 w-16 text-gray-300" />
+                    ) : (
+                      <div className="overflow-x-auto">
+                        <table className="w-full">
+                          <thead>
+                            <tr className="bg-gray-50 border-b">
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Naam</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bedrijf</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gewicht</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Afmetingen</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Spoed</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Datum</th>
+                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acties</th>
+                            </tr>
+                          </thead>
+                          <tbody className="bg-white divide-y divide-gray-200">
+                            {filterPrijsOffertes(prijsOffertes).map((offerte) => (
+                              <tr key={offerte.id} className="hover:bg-gray-50">
+                                <td className="px-4 py-4 whitespace-nowrap">
+                                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                    offerte.isVerwerkt 
+                                      ? 'bg-green-100 text-green-800' 
+                                      : 'bg-amber-100 text-amber-800'
+                                  }`}>
+                                    {offerte.isVerwerkt ? 'Verwerkt' : 'Nieuw'}
+                                  </span>
+                                </td>
+                                <td className="px-4 py-4 whitespace-nowrap">
+                                  <div className="font-medium">{offerte.naam}</div>
+                                  <div className="text-xs text-gray-500">{offerte.email}</div>
+                                </td>
+                                <td className="px-4 py-4 whitespace-nowrap">{offerte.bedrijf || '-'}</td>
+                                <td className="px-4 py-4 whitespace-nowrap capitalize">{offerte.transportType}</td>
+                                <td className="px-4 py-4 whitespace-nowrap">{offerte.gewicht} kg</td>
+                                <td className="px-4 py-4 whitespace-nowrap capitalize">{offerte.afmetingen}</td>
+                                <td className="px-4 py-4 whitespace-nowrap capitalize">{offerte.spoed}</td>
+                                <td className="px-4 py-4 whitespace-nowrap">{formatDate(offerte.createdAt)}</td>
+                                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                                  <div className="flex items-center space-x-2">
+                                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                      <Eye className="h-4 w-4" />
+                                    </Button>
+                                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                      <Mail className="h-4 w-4" />
+                                    </Button>
+                                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-red-500 hover:text-red-700">
+                                      <Trash className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
                       </div>
-                      <h3 className="mt-4 text-lg font-semibold">Geen offertes gevonden</h3>
-                      <p className="mt-2 text-gray-500 max-w-md mx-auto">
-                        {searchQuery 
-                          ? "Er zijn geen offertes die overeenkomen met uw zoekopdracht"
-                          : "Er zijn nog geen prijsoffertes aangevraagd."}
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="space-y-6">
-                      {filteredPrijsOffertes.map((offerte) => (
-                        <Card key={offerte.id} className={`overflow-hidden ${!offerte.isVerwerkt ? 'border-l-4 border-l-green-500' : ''}`}>
-                          <CardHeader className="pb-2">
-                            <div className="flex justify-between">
-                              <div>
-                                <CardTitle className="flex items-center">
-                                  <span>{offerte.naam}</span>
-                                  {!offerte.isVerwerkt && (
-                                    <Badge className="ml-2" variant="default">Nieuw</Badge>
-                                  )}
-                                </CardTitle>
-                                <CardDescription>
-                                  {offerte.email} • {offerte.telefoon} {offerte.bedrijf ? `• ${offerte.bedrijf}` : ''}
-                                </CardDescription>
-                              </div>
-                              <div className="text-sm text-gray-500">
-                                {formatDate(offerte.createdAt)}
-                              </div>
-                            </div>
-                          </CardHeader>
-                          <CardContent className="pb-2">
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-                              <div>
-                                <p className="text-xs text-gray-500 mb-1">Transport Type</p>
-                                <p className="font-medium">{offerte.transportType}</p>
-                              </div>
-                              <div>
-                                <p className="text-xs text-gray-500 mb-1">Gewicht</p>
-                                <p className="font-medium">{offerte.gewicht} kg</p>
-                              </div>
-                              <div>
-                                <p className="text-xs text-gray-500 mb-1">Afmetingen</p>
-                                <p className="font-medium">{offerte.afmetingen}</p>
-                              </div>
-                              <div>
-                                <p className="text-xs text-gray-500 mb-1">Spoed</p>
-                                <p className="font-medium">{offerte.spoed}</p>
-                              </div>
-                            </div>
-                            {offerte.opmerkingen && (
-                              <div>
-                                <p className="text-xs text-gray-500 mb-1">Opmerkingen</p>
-                                <p className="text-sm whitespace-pre-line">{offerte.opmerkingen}</p>
-                              </div>
-                            )}
-                          </CardContent>
-                          <div className="px-6 pb-4 flex justify-end space-x-2">
-                            <Button variant="outline" size="sm">
-                              {offerte.isVerwerkt ? "Al verwerkt" : "Markeer als verwerkt"}
-                            </Button>
-                            <Button size="sm">
-                              <Mail className="mr-2 h-4 w-4" />
-                              Offerte opstellen
-                            </Button>
-                          </div>
-                        </Card>
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-            
-            {/* Instellingen tab - eenvoudige placeholder versie */}
-            <TabsContent value="instellingen" className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Systeeminstellingen</CardTitle>
-                  <CardDescription>Beheer de instellingen van het admin dashboard</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-8">
-                  <div>
-                    <h3 className="text-lg font-medium mb-4">Algemene instellingen</h3>
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label className="text-sm font-medium block mb-1.5">Bedrijfsnaam</label>
-                          <Input defaultValue="PriorityParcel" />
-                        </div>
-                        <div>
-                          <label className="text-sm font-medium block mb-1.5">Contact Email</label>
-                          <Input defaultValue="info@priorityparcel.nl" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-lg font-medium mb-4">Notificatie instellingen</h3>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium">Email notificaties</p>
-                          <p className="text-sm text-gray-500">Ontvang email bij nieuwe berichten</p>
-                        </div>
-                        <div>
-                          <Button variant="outline">Inschakelen</Button>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium">Dashboard notificaties</p>
-                          <p className="text-sm text-gray-500">Toon notificaties in het dashboard</p>
-                        </div>
-                        <div>
-                          <Button>Uitschakelen</Button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
-        </main>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+          </main>
+        </div>
       </div>
     </div>
   );

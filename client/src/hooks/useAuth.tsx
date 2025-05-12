@@ -158,7 +158,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   
   // Check if user is admin and redirect to admin dashboard
   useEffect(() => {
-    if (user && user.role === "admin") {
+    if (user && (user as any).role === "admin") {
       setLocation("/admin");
     }
   }, [user, setLocation]);
