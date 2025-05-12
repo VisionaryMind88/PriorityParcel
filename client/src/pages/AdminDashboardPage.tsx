@@ -214,7 +214,7 @@ export default function AdminDashboardPage() {
   // Haal dashboard statistieken op
   useEffect(() => {
     const fetchStats = async () => {
-      if (!isAuthenticated || !user || user.role !== "admin") return;
+      if (!isAuthenticated || !user || (user as any).role !== "admin") return;
       
       try {
         setLoadingStats(true);
@@ -244,7 +244,7 @@ export default function AdminDashboardPage() {
   // Haal alle klanten op
   useEffect(() => {
     const fetchKlanten = async () => {
-      if (!isAuthenticated || !user || user.role !== "admin") return;
+      if (!isAuthenticated || !user || (user as any).role !== "admin") return;
       
       try {
         setLoadingKlanten(true);
@@ -278,7 +278,7 @@ export default function AdminDashboardPage() {
   // Haal alle zendingen op
   useEffect(() => {
     const fetchZendingen = async () => {
-      if (!isAuthenticated || !user || user.role !== "admin") return;
+      if (!isAuthenticated || !user || (user as any).role !== "admin") return;
       
       try {
         setLoadingZendingen(true);
@@ -312,7 +312,7 @@ export default function AdminDashboardPage() {
   // Haal alle contactberichten op
   useEffect(() => {
     const fetchContactMessages = async () => {
-      if (!isAuthenticated || !user || user.role !== "admin") return;
+      if (!isAuthenticated || !user || (user as any).role !== "admin") return;
       
       try {
         setLoadingContactMessages(true);
@@ -346,7 +346,7 @@ export default function AdminDashboardPage() {
   // Haal alle prijsoffertes op
   useEffect(() => {
     const fetchPrijsOffertes = async () => {
-      if (!isAuthenticated || !user || user.role !== "admin") return;
+      if (!isAuthenticated || !user || (user as any).role !== "admin") return;
       
       try {
         setLoadingPrijsOffertes(true);
