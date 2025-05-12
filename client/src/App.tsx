@@ -15,6 +15,7 @@ import OverOnsPage from "@/pages/OverOnsPage";
 import ContactPage from "@/pages/ContactPage";
 import LoginPage from "@/pages/LoginPage";
 import DashboardPage from "@/pages/DashboardPage";
+import AdminDashboardPage from "@/pages/AdminDashboardPage";
 
 function Router() {
   return (
@@ -30,6 +31,11 @@ function Router() {
       <Route path="/dashboard">
         <ProtectedRoute>
           <DashboardPage />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/admin">
+        <ProtectedRoute>
+          <AdminDashboardPage />
         </ProtectedRoute>
       </Route>
       {/* Fallback to 404 */}
