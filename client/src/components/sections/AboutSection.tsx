@@ -1,4 +1,4 @@
-import bezorgdienstImage from "../../assets/bezorgdienst.png";
+import bezorgdienstImage from "@assets/Scherm­afbeelding 2025-05-11 om 21.50.08.png";
 
 interface Stat {
   value: string;
