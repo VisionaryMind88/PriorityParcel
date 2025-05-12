@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import deliveryVanImage from "../../assets/priorityparcel-van.jpg";
+import deliveryVanImage from "../../assets/priorityparcel-van2.jpg";
 
 export default function HeroSection() {
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
