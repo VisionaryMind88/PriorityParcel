@@ -9,10 +9,10 @@ interface NavLink {
 
 const navLinks: NavLink[] = [
   { label: "Home", href: "/" },
-  { label: "Diensten", href: "/#diensten" },
-  { label: "Over Ons", href: "/#over-ons" },
+  { label: "Diensten", href: "/diensten" },
+  { label: "Over Ons", href: "/over-ons" },
   { label: "Prijzen", href: "/prijzen" },
-  { label: "Contact", href: "/#contact" },
+  { label: "Contact", href: "/contact" },
 ];
 
 const actionLinks: NavLink[] = [
@@ -44,24 +44,40 @@ export default function Header() {
   }, []);
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    e.preventDefault();
-    
-    // Als het een volledige URL is, navigeren we daarheen
-    if (href.startsWith('/')) {
-      window.location.href = href;
+    // Als het een interne link met hash is (naar een sectie op de pagina)
+    if (href.startsWith('/#')) {
+      e.preventDefault();
+      
+      if (window.location.pathname !== '/') {
+        // Als we niet op de homepagina zijn, navigeren we eerst daarheen
+        window.location.href = href;
+        return;
+      }
+      
+      // We zijn op de homepagina, dus scroll naar het element
+      const elementId = href.substring(2); // Verwijder '/#'
+      const element = document.getElementById(elementId);
+      
+      if (element) {
+        const offsetTop = element.getBoundingClientRect().top + window.pageYOffset - 100;
+        window.scrollTo({
+          top: offsetTop,
+          behavior: "smooth",
+        });
+        if (isMenuOpen) setIsMenuOpen(false);
+      }
       return;
     }
     
-    // Anders scrollen we naar het element op de pagina
-    const element = document.querySelector(href);
-    if (element) {
-      const offsetTop = element.getBoundingClientRect().top + window.pageYOffset - 100;
-      window.scrollTo({
-        top: offsetTop,
-        behavior: "smooth",
-      });
-      if (isMenuOpen) setIsMenuOpen(false);
+    // Als het een interne paginalink is zonder hash, laat normal navigatie toe
+    if (href.startsWith('/') && !href.includes('#')) {
+      // Normaal navigeren naar de pagina
+      return;
     }
+    
+    // Voor externe links of andere gevallen
+    e.preventDefault();
+    window.location.href = href;
   };
 
   return (

@@ -47,7 +47,7 @@ export default function OffertePage() {
   const onSubmit = async (data: OfferteFormValues) => {
     setIsSubmitting(true);
     try {
-      await apiRequest("/api/offerte", "POST", {
+      await apiRequest("/api/prijsofferte", "POST", {
         ...data,
         // Voeg timestamp toe
         timestamp: new Date().toISOString(),

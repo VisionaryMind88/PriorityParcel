@@ -9,7 +9,7 @@ interface ContactInfo {
 const contactInfo: Record<string, ContactInfo> = {
   address: {
     icon: "fas fa-map-marker-alt",
-    details: ["Transportweg 123", "1234 AB Amsterdam", "Nederland"],
+    details: ["Meanderhof 97", "4337 GP Middelburg", "Nederland"],
   },
   phone: {
     icon: "fas fa-phone-alt",
@@ -38,17 +38,22 @@ const GoogleMap = ({ address }: GoogleMapsProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // This would be replaced with actual Google Maps integration in production
-    // The script would be loaded from Google's CDN and initialized with an API key
+    // Real Google Maps integration using iframe
     if (mapRef.current) {
       const mapDiv = mapRef.current;
       
-      // Simple placeholder for the Google Maps
+      // Embedded Google Maps iframe with the specific address
+      const encodedAddress = encodeURIComponent(address);
       mapDiv.innerHTML = `
-        <div class="flex flex-col items-center justify-center h-full bg-gray-200 text-gray-500">
-          <i class="fas fa-map-marked-alt text-4xl mb-2"></i>
-          <p>Google Maps integratie: ${address}</p>
-        </div>
+        <iframe 
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2486.0839958918696!2d3.6062611!3d51.4567899!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47c490d15d9d9573%3A0xfafe20bf18cc0f9d!2sMeanderhof%2097%2C%204337%20GP%20Middelburg!5e0!3m2!1snl!2snl!4v1652343452368!5m2!1snl!2snl"
+          width="100%" 
+          height="100%" 
+          style="border:0;" 
+          allowfullscreen="" 
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
       `;
     }
   }, [address]);
@@ -97,7 +102,7 @@ export default function ContactSection() {
             </div>
             
             {/* Google Maps Integration */}
-            <GoogleMap address="Transportweg 123, 1234 AB Amsterdam, Nederland" />
+            <GoogleMap address="Meanderhof 97, 4337 GP Middelburg, Nederland" />
           </div>
         </div>
       </div>
