@@ -5,12 +5,13 @@ interface LogoProps {
   className?: string;
 }
 
-export function Logo({ className = "h-10 md:h-14 w-auto" }: LogoProps) {
+export function Logo({ className = "h-14 md:h-20 w-auto" }: LogoProps) {
   return (
     <img 
       src={logoPath} 
       alt="PriorityParcel Logo" 
       className={className} 
+      style={{ objectFit: 'contain', imageRendering: 'crisp-edges' }}
     />
   );
 }

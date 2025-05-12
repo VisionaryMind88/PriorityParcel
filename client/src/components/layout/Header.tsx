@@ -90,7 +90,7 @@ export default function Header() {
         <div className="flex justify-between items-center">
           <div className="flex items-center">
             <Link href="/" className="flex items-center">
-              <div className="w-auto">
+              <div className="w-auto py-2">
                 <Logo />
               </div>
             </Link>
