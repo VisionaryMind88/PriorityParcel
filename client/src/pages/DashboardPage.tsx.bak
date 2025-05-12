@@ -484,37 +484,37 @@ export default function DashboardPage() {
                   ) : (
                     <div className="overflow-x-auto">
                       <table className="w-full border-collapse">
-                        <thead>
-                          <tr className="border-b text-left">
-                            <th className="py-3 px-4 font-medium">Tracking Code</th>
-                            <th className="py-3 px-4 font-medium">Status</th>
-                            <th className="py-3 px-4 font-medium">Verzonden</th>
-                            <th className="py-3 px-4 font-medium">Verwachte levering</th>
-                            <th className="py-3 px-4 font-medium">Ontvanger</th>
-                            <th className="py-3 px-4 font-medium">Prijs</th>
-                            <th className="py-3 px-4 font-medium">Acties</th>
+                      <thead>
+                        <tr className="border-b text-left">
+                          <th className="py-3 px-4 font-medium">Tracking Code</th>
+                          <th className="py-3 px-4 font-medium">Status</th>
+                          <th className="py-3 px-4 font-medium">Verzonden</th>
+                          <th className="py-3 px-4 font-medium">Verwachte levering</th>
+                          <th className="py-3 px-4 font-medium">Ontvanger</th>
+                          <th className="py-3 px-4 font-medium">Prijs</th>
+                          <th className="py-3 px-4 font-medium">Acties</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredZendingen.map((zending: Zending) => (
+                          <tr key={zending.id} className="border-b hover:bg-gray-50">
+                            <td className="py-3 px-4 font-medium">{zending.trackingCode}</td>
+                            <td className="py-3 px-4">
+                              <StatusBadge status={zending.status} />
+                            </td>
+                            <td className="py-3 px-4 text-sm">{formatDate(zending.verzendDatum)}</td>
+                            <td className="py-3 px-4 text-sm">{formatDate(zending.geplanndeAfleverDatum)}</td>
+                            <td className="py-3 px-4">{zending.ontvanger}</td>
+                            <td className="py-3 px-4">{zending.prijs}</td>
+                            <td className="py-3 px-4">
+                              <Button variant="ghost" size="sm">Details</Button>
+                            </td>
                           </tr>
-                        </thead>
-                        <tbody>
-                          {filteredZendingen.map((zending: Zending) => (
-                            <tr key={zending.id} className="border-b hover:bg-gray-50">
-                              <td className="py-3 px-4 font-medium">{zending.trackingCode}</td>
-                              <td className="py-3 px-4">
-                                <StatusBadge status={zending.status} />
-                              </td>
-                              <td className="py-3 px-4 text-sm">{formatDate(zending.verzendDatum)}</td>
-                              <td className="py-3 px-4 text-sm">{formatDate(zending.geplanndeAfleverDatum)}</td>
-                              <td className="py-3 px-4">{zending.ontvanger}</td>
-                              <td className="py-3 px-4 font-medium">{zending.prijs}</td>
-                              <td className="py-3 px-4">
-                                <Button variant="ghost" size="sm">Details</Button>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  )
                 </CardContent>
               </Card>
             </TabsContent>
@@ -525,66 +525,98 @@ export default function DashboardPage() {
                 <CardHeader>
                   <CardTitle>Uw Statistieken</CardTitle>
                   <CardDescription>
-                    Inzicht in uw transportactiviteiten
+                    Gedetailleerde informatie over uw transportactiviteiten
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {loadingStats ? (
-                    <div className="animate-pulse space-y-6">
-                      <div className="h-8 bg-gray-200 rounded w-1/3"></div>
-                      <div className="h-64 bg-gray-100 rounded w-full"></div>
-                    </div>
-                  ) : (
-                    <div className="space-y-8">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <Card>
-                          <CardHeader>
-                            <CardTitle className="text-sm">Zendingen per Status</CardTitle>
-                          </CardHeader>
-                          <CardContent className="h-64 flex items-center justify-center">
-                            <div className="text-center">
-                              <BarChart3 className="h-16 w-16 mx-auto text-gray-300" />
-                              <p className="mt-4 text-sm text-gray-500">Grafiek met statusverdeling</p>
-                            </div>
-                          </CardContent>
-                        </Card>
-                        
-                        <Card>
-                          <CardHeader>
-                            <CardTitle className="text-sm">Zendingen over Tijd</CardTitle>
-                          </CardHeader>
-                          <CardContent className="h-64 flex items-center justify-center">
-                            <div className="text-center">
-                              <BarChart3 className="h-16 w-16 mx-auto text-gray-300" />
-                              <p className="mt-4 text-sm text-gray-500">Grafiek met zendingen per periode</p>
-                            </div>
-                          </CardContent>
-                        </Card>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <div className="flex items-center space-x-2 mb-4">
+                        <Package className="h-6 w-6 text-primary" />
+                        <h3 className="text-lg font-medium">Zendingen</h3>
                       </div>
-                      
-                      <Card>
-                        <CardHeader>
-                          <CardTitle className="text-sm">Gedetailleerde Metrics</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div className="border rounded-lg p-4">
-                              <div className="text-sm text-gray-500 mb-1">Totaal Zendingen</div>
-                              <div className="text-2xl font-bold">{statsData.totaalZendingen}</div>
-                            </div>
-                            <div className="border rounded-lg p-4">
-                              <div className="text-sm text-gray-500 mb-1">Actieve Zendingen</div>
-                              <div className="text-2xl font-bold">{statsData.actieveZendingen}</div>
-                            </div>
-                            <div className="border rounded-lg p-4">
-                              <div className="text-sm text-gray-500 mb-1">Gem. Leveringstijd</div>
-                              <div className="text-2xl font-bold">{statsData.gemiddeldeLeveringstijd}</div>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <span>Totaal</span>
+                          <span className="font-bold">{statsData.totaalZendingen}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Actief</span>
+                          <span className="font-bold">{statsData.actieveZendingen}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Afgeleverd</span>
+                          <span className="font-bold">{statsData.afgeleverd}</span>
+                        </div>
+                      </div>
                     </div>
-                  )}
+                    
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <div className="flex items-center space-x-2 mb-4">
+                        <Clock className="h-6 w-6 text-primary" />
+                        <h3 className="text-lg font-medium">Tijden</h3>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <span>Gem. leveringstijd</span>
+                          <span className="font-bold">{statsData.gemiddeldeLeveringstijd}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Op tijd geleverd</span>
+                          <span className="font-bold">94%</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Vertraagd</span>
+                          <span className="font-bold">6%</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <div className="flex items-center space-x-2 mb-4">
+                        <BarChart3 className="h-6 w-6 text-primary" />
+                        <h3 className="text-lg font-medium">Type Zendingen</h3>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <span>Nationaal</span>
+                          <span className="font-bold">68%</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Internationaal</span>
+                          <span className="font-bold">32%</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Spoed</span>
+                          <span className="font-bold">24%</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <div className="flex items-center space-x-2 mb-4">
+                        <Repeat className="h-6 w-6 text-primary" />
+                        <h3 className="text-lg font-medium">Trend</h3>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <span>Deze maand</span>
+                          <span className="font-bold">43 zendingen</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span>Vorige maand</span>
+                          <div className="flex items-center">
+                            <span className="font-bold mr-1">37</span>
+                            <span className="text-green-500 text-xs">(+16%)</span>
+                          </div>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Prognose</span>
+                          <span className="font-bold">+12%</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>
