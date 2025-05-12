@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
+import { useAuth } from "@/hooks/useAuth";
+import { User, LogIn } from "lucide-react";
 import { Logo } from "../Logo";
 
 interface NavLink {
@@ -23,6 +25,8 @@ const actionLinks: NavLink[] = [
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { user, isAuthenticated, logout } = useAuth();
+  const [, navigate] = useLocation();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -116,6 +120,32 @@ export default function Header() {
                   {link.label}
                 </a>
               ))}
+              
+              {isAuthenticated ? (
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => navigate("/dashboard")}
+                    className="bg-gray-200 text-primary px-3 py-2 rounded-md hover:bg-gray-300 transition-colors flex items-center space-x-1"
+                  >
+                    <User className="h-4 w-4" />
+                    <span>Dashboard</span>
+                  </button>
+                  <button
+                    onClick={() => logout()}
+                    className="text-gray-600 px-3 py-2 rounded-md hover:bg-gray-100 transition-colors"
+                  >
+                    Uitloggen
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => navigate("/login")}
+                  className="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors flex items-center space-x-1"
+                >
+                  <LogIn className="h-4 w-4" />
+                  <span>Inloggen</span>
+                </button>
+              )}
             </div>
           </nav>
           
@@ -161,6 +191,41 @@ export default function Header() {
                     {link.label}
                   </a>
                 ))}
+                
+                {isAuthenticated ? (
+                  <div className="flex flex-col space-y-2 mt-4">
+                    <button
+                      onClick={() => {
+                        navigate("/dashboard");
+                        setIsMenuOpen(false);
+                      }}
+                      className="bg-gray-200 text-primary px-3 py-2 rounded-md hover:bg-gray-300 transition-colors flex items-center justify-center space-x-1"
+                    >
+                      <User className="h-4 w-4" />
+                      <span>Dashboard</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        logout();
+                        setIsMenuOpen(false);
+                      }}
+                      className="text-gray-600 border border-gray-300 px-3 py-2 rounded-md hover:bg-gray-100 transition-colors"
+                    >
+                      Uitloggen
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => {
+                      navigate("/login");
+                      setIsMenuOpen(false);
+                    }}
+                    className="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors flex items-center justify-center space-x-1 w-full my-3"
+                  >
+                    <LogIn className="h-4 w-4" />
+                    <span>Inloggen</span>
+                  </button>
+                )}
               </div>
             </div>
           </div>
