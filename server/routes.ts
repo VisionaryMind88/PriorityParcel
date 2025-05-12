@@ -198,6 +198,81 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     }
   });
+  
+  // Admin routes
+  
+  // Get all users (admin only)
+  app.get("/api/admin/klanten", async (req: Request, res: Response) => {
+    try {
+      // In a real implementation, we would check if the user is an admin
+      // For now, we'll allow any authenticated user to access this endpoint
+      const authHeader = req.headers.authorization;
+      
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ message: "Niet geautoriseerd" });
+      }
+      
+      // Get all users
+      const users = await storage.getAllUsers();
+      
+      // Remove passwords before sending the response
+      const usersWithoutPasswords = users.map(user => {
+        const { password, ...userWithoutPassword } = user;
+        return userWithoutPassword;
+      });
+      
+      return res.status(200).json(usersWithoutPasswords);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      return res.status(500).json({
+        message: "Er is een fout opgetreden bij het ophalen van gebruikers"
+      });
+    }
+  });
+  
+  // Get all contact messages (admin only)
+  app.get("/api/admin/contact", async (req: Request, res: Response) => {
+    try {
+      // In a real implementation, we would check if the user is an admin
+      const authHeader = req.headers.authorization;
+      
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ message: "Niet geautoriseerd" });
+      }
+      
+      // Get all contact messages
+      const messages = await storage.getAllContactMessages();
+      
+      return res.status(200).json(messages);
+    } catch (error) {
+      console.error("Error fetching contact messages:", error);
+      return res.status(500).json({
+        message: "Er is een fout opgetreden bij het ophalen van contactberichten"
+      });
+    }
+  });
+  
+  // Get all prijsoffertes (admin only)
+  app.get("/api/admin/prijsoffertes", async (req: Request, res: Response) => {
+    try {
+      // In a real implementation, we would check if the user is an admin
+      const authHeader = req.headers.authorization;
+      
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ message: "Niet geautoriseerd" });
+      }
+      
+      // Get all prijsoffertes
+      const offertes = await storage.getAllPrijsOffertes();
+      
+      return res.status(200).json(offertes);
+    } catch (error) {
+      console.error("Error fetching prijsoffertes:", error);
+      return res.status(500).json({
+        message: "Er is een fout opgetreden bij het ophalen van prijsoffertes"
+      });
+    }
+  });
 
   // Create a demo user for testing (normally this would be in a registration endpoint)
   app.post("/api/demo-user", async (req: Request, res: Response) => {

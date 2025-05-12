@@ -611,33 +611,15 @@ export default function AdminDashboardPage() {
           }} />
           <SidebarItem 
             icon={MessageSquare} 
-            label={
-              <div className="flex items-center">
-                <span>Contactberichten</span>
-                {nieuweBerichtenCount > 0 && (
-                  <span className="ml-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
-                    {nieuweBerichtenCount}
-                  </span>
-                )}
-              </div>
-            } 
+            label={"Contactberichten" + (nieuweBerichtenCount > 0 ? ` (${nieuweBerichtenCount})` : "")}
             onClick={() => {
               setActiveSidebarItem("berichten");
               setActiveTab("berichten");
             }} 
           />
           <SidebarItem 
-            icon={FileText} 
-            label={
-              <div className="flex items-center">
-                <span>Prijsoffertes</span>
-                {nieuweOffertesCount > 0 && (
-                  <span className="ml-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
-                    {nieuweOffertesCount}
-                  </span>
-                )}
-              </div>
-            } 
+            icon={FileText}
+            label={"Prijsoffertes" + (nieuweOffertesCount > 0 ? ` (${nieuweOffertesCount})` : "")}
             onClick={() => {
               setActiveSidebarItem("offertes");
               setActiveTab("offertes");

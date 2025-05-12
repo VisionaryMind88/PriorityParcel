@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/useAuth";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import AdminProtectedRoute from "@/components/AdminProtectedRoute";
 import NotFound from "@/pages/not-found";
 import HomePage from "@/pages/HomePage";
 import OffertePage from "@/pages/OffertePage";
@@ -34,9 +35,9 @@ function Router() {
         </ProtectedRoute>
       </Route>
       <Route path="/admin">
-        <ProtectedRoute>
+        <AdminProtectedRoute>
           <AdminDashboardPage />
-        </ProtectedRoute>
+        </AdminProtectedRoute>
       </Route>
       {/* Fallback to 404 */}
       <Route component={NotFound} />

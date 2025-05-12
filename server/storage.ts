@@ -170,6 +170,76 @@ export class MemStorage implements IStorage {
         this.zendingCurrentId = zending.id + 1;
       }
     });
+    
+    // Voeg voorbeelden van contactformulieren toe
+    const mockContactMessages = [
+      {
+        id: 1,
+        naam: "Peter Jansen",
+        email: "p.jansen@example.com",
+        telefoon: "+31 6 12345678",
+        bedrijf: "Jansen Transport",
+        bericht: "Ik zou graag meer informatie willen over jullie internationale transportdiensten.",
+        createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+        isBeantwoord: false
+      },
+      {
+        id: 2,
+        naam: "Anna de Vries",
+        email: "anna.devries@example.com",
+        telefoon: "+31 6 23456789",
+        bedrijf: null,
+        bericht: "Kunnen jullie ook kleine pakketten bezorgen in België?",
+        createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+        isBeantwoord: true
+      }
+    ];
+    
+    mockContactMessages.forEach(message => {
+      this.contactMessages.set(message.id, message);
+      if (message.id >= this.contactMessageCurrentId) {
+        this.contactMessageCurrentId = message.id + 1;
+      }
+    });
+    
+    // Voeg voorbeelden van prijsoffertes toe
+    const mockPrijsOffertes = [
+      {
+        id: 1,
+        naam: "Karel Bakker",
+        email: "k.bakker@example.com",
+        telefoon: "+31 6 34567890",
+        bedrijf: "Bakker & Zonen",
+        transportType: "nationaal",
+        gewicht: "20-50",
+        afmetingen: "groot",
+        spoed: "standaard",
+        opmerkingen: "Levering moet op werkdagen tussen 9 en 17 uur.",
+        createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+        isVerwerkt: false
+      },
+      {
+        id: 2,
+        naam: "Sophie van Dijk",
+        email: "sophie.vandijk@example.com",
+        telefoon: "+31 6 45678901",
+        bedrijf: null,
+        transportType: "internationaal",
+        gewicht: "10-20",
+        afmetingen: "middel",
+        spoed: "spoed",
+        opmerkingen: null,
+        createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+        isVerwerkt: true
+      }
+    ];
+    
+    mockPrijsOffertes.forEach(offerte => {
+      this.prijsOffertes.set(offerte.id, offerte);
+      if (offerte.id >= this.prijsOfferteCurrentId) {
+        this.prijsOfferteCurrentId = offerte.id + 1;
+      }
+    });
   }
 
   // User methods
