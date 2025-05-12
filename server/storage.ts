@@ -12,19 +12,28 @@ export interface IStorage {
   createContactMessage(message: InsertContactMessage): Promise<ContactMessage>;
   getAllContactMessages(): Promise<ContactMessage[]>;
   getContactMessage(id: number): Promise<ContactMessage | undefined>;
+  
+  // Prijsofferte methods
+  createPrijsOfferte(offerte: InsertPrijsOfferte): Promise<PrijsOfferte>;
+  getAllPrijsOffertes(): Promise<PrijsOfferte[]>;
+  getPrijsOfferte(id: number): Promise<PrijsOfferte | undefined>;
 }
 
 export class MemStorage implements IStorage {
   private users: Map<number, User>;
   private contactMessages: Map<number, ContactMessage>;
+  private prijsOffertes: Map<number, PrijsOfferte>;
   private userCurrentId: number;
   private contactMessageCurrentId: number;
+  private prijsOfferteCurrentId: number;
 
   constructor() {
     this.users = new Map();
     this.contactMessages = new Map();
+    this.prijsOffertes = new Map();
     this.userCurrentId = 1;
     this.contactMessageCurrentId = 1;
+    this.prijsOfferteCurrentId = 1;
   }
 
   // User methods
