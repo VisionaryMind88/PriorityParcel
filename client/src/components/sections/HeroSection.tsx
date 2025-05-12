@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import deliveryVanImage from "../../assets/delivery-van.jpg";
+import deliveryVanImage from "../../assets/priorityparcel-van.jpg";
 
 export default function HeroSection() {
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
@@ -20,7 +20,7 @@ export default function HeroSection() {
         className="absolute inset-0 bg-cover bg-center"
         style={{ backgroundImage: `url(${deliveryVanImage})` }}
       ></div>
-      <div className="absolute inset-0 bg-black opacity-60"></div>
+      <div className="absolute inset-0 bg-black opacity-40"></div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10 relative z-10">
         <div className="max-w-3xl">
           <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold leading-tight mb-3">
