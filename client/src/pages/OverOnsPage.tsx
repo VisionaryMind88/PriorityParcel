@@ -84,14 +84,14 @@ export default function OverOnsPage() {
 
   const teamMembers = [
     {
-      name: "Jan de Vries",
+      name: "Mert Telli",
       role: "Oprichter & CEO",
-      bio: "Jan heeft meer dan 15 jaar ervaring in de transportwereld en richtte PriorityParcel op met een visie om transportdiensten persoonlijker en efficiënter te maken."
+      bio: "Mert heeft meer dan 15 jaar ervaring in de transportwereld en richtte PriorityParcel op met een visie om transportdiensten persoonlijker en efficiënter te maken."
     },
     {
-      name: "Linda Bakker",
+      name: "Michael Dizdarevic",
       role: "Operations Manager",
-      bio: "Met haar scherpe logistieke inzicht zorgt Linda ervoor dat elke zending op de meest efficiënte manier wordt gepland en uitgevoerd."
+      bio: "Met zijn scherpe logistieke inzicht zorgt Michael ervoor dat elke zending op de meest efficiënte manier wordt gepland en uitgevoerd."
     },
     {
       name: "Martijn Jansen",
@@ -138,7 +138,7 @@ export default function OverOnsPage() {
                   Nederlandse transportmarkt.
                 </p>
                 <p className="text-gray-600 mb-4">
-                  Onze oprichter, Jan de Vries, was gefrustreerd over de onpersoonlijke en vaak onbetrouwbare 
+                  Onze oprichter, Mert Telli, was gefrustreerd over de onpersoonlijke en vaak onbetrouwbare 
                   dienstverlening in de transportsector. Hij besloot een bedrijf te starten dat zich zou onderscheiden 
                   door betrouwbaarheid, transparantie en persoonlijke service.
                 </p>

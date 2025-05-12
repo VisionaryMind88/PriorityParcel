@@ -21,7 +21,7 @@ const ContactInfoItem = ({ icon: Icon, title, details }: ContactInfoItemProps) =
       </div>
       <div className="pl-9">
         {details.map((detail, index) => (
-          <p key={index} className="text-gray-700 mb-1">{detail}</p>
+          <p key={index} className="text-gray-700 mb-1" dangerouslySetInnerHTML={{ __html: detail }}></p>
         ))}
       </div>
     </div>
@@ -74,12 +74,17 @@ export default function ContactPage() {
     {
       icon: Phone,
       title: "Telefoon",
-      details: ["+31 (0)20 123 4567", "+31 (0)6 12345678 (spoed)"]
+      details: [
+        "<a href='tel:+31854011028' class='hover:text-accent'>+31 (0)85 401 1028</a>", 
+        "<a href='tel:+31647156687' class='hover:text-accent'>+31 (0)6 47156687</a> (spoed)"
+      ]
     },
     {
       icon: Mail,
       title: "E-mail",
-      details: ["info@priorityparcel.nl", "service@priorityparcel.nl"]
+      details: [
+        "<a href='mailto:info@priorityparcel.nl' class='hover:text-accent'>info@priorityparcel.nl</a>"
+      ]
     },
     {
       icon: Clock,
@@ -209,7 +214,7 @@ export default function ContactPage() {
                   Heeft u een andere vraag? Neem gerust contact met ons op via 
                   <a href="mailto:info@priorityparcel.nl" className="text-accent hover:underline mx-1">info@priorityparcel.nl</a>
                   of bel
-                  <a href="tel:+31201234567" className="text-accent hover:underline mx-1">+31 (0)20 123 4567</a>.
+                  <a href="tel:+31854011028" className="text-accent hover:underline mx-1">+31 (0)85 401 1028</a>.
                 </p>
               </div>
             </div>

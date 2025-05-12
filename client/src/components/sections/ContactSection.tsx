@@ -13,11 +13,12 @@ const contactInfo: Record<string, ContactInfo> = {
   },
   phone: {
     icon: "fas fa-phone-alt",
-    details: ["+31 (0)20 123 4567"],
+    details: ["<a href='tel:+31854011028' class='hover:text-accent'>+31 (0)85 401 1028</a>", 
+              "<a href='tel:+31647156687' class='hover:text-accent'>+31 (0)6 47156687</a> (spoed)"],
   },
   email: {
     icon: "fas fa-envelope",
-    details: ["info@priorityparcel.nl"],
+    details: ["<a href='mailto:info@priorityparcel.nl' class='hover:text-accent'>info@priorityparcel.nl</a>"],
   },
   hours: {
     icon: "fas fa-clock",
@@ -93,7 +94,7 @@ export default function ContactSection() {
                     </div>
                     <div>
                       {info.details.map((detail, idx) => (
-                        <p key={idx} className="text-gray-700">{detail}</p>
+                        <p key={idx} className="text-gray-700" dangerouslySetInnerHTML={{ __html: detail }}></p>
                       ))}
                     </div>
                   </div>
