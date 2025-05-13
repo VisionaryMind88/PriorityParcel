@@ -1,17 +1,18 @@
 import React from 'react';
-import logoPath from '../assets/priorityparcel-logo-new.png';
 
 interface LogoProps {
   className?: string;
+  textClassName?: string; // Keeping for backward compatibility
 }
 
-export function Logo({ className = "h-14 md:h-18 w-auto" }: LogoProps) {
+export function Logo({ className = "h-14 md:h-18" }: LogoProps) {
   return (
-    <img 
-      src={logoPath} 
-      alt="PriorityParcel Logo" 
-      className={className} 
-      style={{ objectFit: 'contain' }}
-    />
+    <div className={`flex items-center justify-center ${className}`}>
+      <img 
+        src="/priorityparcel_logo-removebg-preview.png" 
+        alt="PriorityParcel Logo"
+        className="w-full h-full object-contain"
+      />
+    </div>
   );
 }
