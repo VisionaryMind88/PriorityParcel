@@ -1,5 +1,5 @@
 import React from 'react';
-import logoPath from '../assets/9f3fc153-6d70-4b48-84a7-435b5b7a50f8_removalai_preview.png';
+import logoPath from '../assets/priorityparcel-logo-new.png';
 
 interface LogoProps {
   className?: string;
