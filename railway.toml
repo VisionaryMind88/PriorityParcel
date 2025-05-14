@@ -1,0 +1,22 @@
+# Railway configuration file
+[environments]
+  default = "production"
+
+[build]
+  builder = "nixpacks"
+  buildCommand = "npm install && npm run build"
+
+[deploy]
+  startCommand = "npm start"
+  healthcheckPath = "/"
+  healthcheckTimeout = 60
+  restartPolicyType = "on_failure"
+
+[metrics]
+  port = 5001
+  path = "/metrics"
+
+[admin]
+  enabled = true
+  path = "/admin"
+
